@@ -1,0 +1,13 @@
+[package]
+name = "aion-types"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+chrono = "0.4.30"
+serde = { version = "1.0.188", features = ["derive"] }
+aion-parse = { path = "../parse" }
+anyhow = "1.0.75"
+llama2_rs = "0.1.1"
