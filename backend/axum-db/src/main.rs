@@ -14,6 +14,7 @@ async fn main() -> Result<()> {
         .init();
 
     let configuration = get_configuration()?;
+    dbg!(&configuration);
 
     let _ = Application::build(configuration).await?;
 

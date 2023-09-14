@@ -86,7 +86,6 @@ pub struct ApplicationBaseUrl(pub String);
 pub async fn run(
     listener: TcpListener,
     conn_pool: PgPool,
-    // email_client: EmailClient,
     base_url: String,
 ) -> Result<Server<AddrIncoming, IntoMakeService<Router>>> {
     tracing::debug!("listening on {}", listener.local_addr()?);

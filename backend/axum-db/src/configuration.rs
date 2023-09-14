@@ -7,13 +7,10 @@ use sqlx::postgres::PgConnectOptions;
 use sqlx::postgres::PgSslMode;
 use sqlx::ConnectOptions;
 
-use crate::domain::SubscriberEmail;
-
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct Settings {
     pub database: DatabaseSettings,
     pub application: ApplicationSettings,
-    pub email_client: EmailClientSettings,
 }
 
 #[derive(Deserialize, Debug, Clone)]
@@ -28,7 +25,7 @@ pub struct DatabaseSettings {
     pub require_ssl: bool,
 }
 
-#[derive(serde::Deserialize, Clone)]
+#[derive(serde::Deserialize, Clone, Debug)]
 pub struct ApplicationSettings {
     #[serde(deserialize_with = "deserialize_number_from_string")]
     pub port: u16,
@@ -37,30 +34,11 @@ pub struct ApplicationSettings {
     pub base_url: String,
 }
 
-#[derive(serde::Deserialize, Clone)]
-pub struct EmailClientSettings {
-    pub base_url: String,
-    pub sender_email: String,
-    // New (secret) configuration value!
-    pub authorization_token: Secret<String>,
-    // new configuration value
-    pub timeout_milliseconds: u64,
-}
-
-impl EmailClientSettings {
-    pub fn sender(&self) -> Result<SubscriberEmail> {
-        SubscriberEmail::parse(&self.sender_email.clone())
-    }
-
-    pub fn timeout(&self) -> std::time::Duration {
-        std::time::Duration::from_millis(self.timeout_milliseconds)
-    }
-}
-
 pub fn get_configuration() -> Result<Settings> {
     let base_path = std::env::current_dir()
         .map_err(|_| anyhow::anyhow!("Failed to determine the current directory"))?;
-    let configuration_directory = base_path.join("configuration");
+    dbg!(&base_path);
+    let configuration_directory = base_path.join("backend/axum-db/configuration");
     // Detect the running environment.
     // Default to `local` if unspecified.
     let environment: Environment = std::env::var("APP_ENVIRONMENT")
