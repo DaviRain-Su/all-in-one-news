@@ -1,9 +1,11 @@
-use super::types::RebaseDaliy;
+use crate::rebase::constant::REBASE_RPC_URL;
+use crate::rebase::types::RebaseDaliy;
 
 pub async fn total_count() -> anyhow::Result<usize> {
-    let response = reqwest::get(
-        "https://db.rebase.network/api/v1/geekdailies?pagination[page]=1&pagination[pageSize]=1",
-    )
+    let response = reqwest::get(format!(
+        "{}?pagination[page]=1&pagination[pageSize]=1",
+        REBASE_RPC_URL
+    ))
     .await?;
 
     let body = response.text().await?;

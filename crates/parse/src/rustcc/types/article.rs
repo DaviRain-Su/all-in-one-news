@@ -1,6 +1,4 @@
 use super::message::{Message, Messages};
-// use retry::delay::Fixed;
-// use retry::OperationResult;
 use scraper::{Html, Selector};
 use serde::{Deserialize, Serialize};
 use std::fmt::Display;
