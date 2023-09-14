@@ -4,6 +4,7 @@ use std::io::prelude::*;
 use std::sync::{Arc, Mutex};
 
 use super::types::RebaseDaliy;
+use crate::rebase::types::RebaseDaliyEpisode;
 
 pub async fn process_task_range(start: usize, end: usize, file: Arc<Mutex<File>>) {
     for id in start..=end {
@@ -30,4 +31,25 @@ pub async fn process_task_range(start: usize, end: usize, file: Arc<Mutex<File>>
             }
         }
     }
+}
+
+pub async fn parse_rebase_data(start: usize, end: usize) -> Vec<RebaseDaliyEpisode> {
+    let mut result = vec![];
+    for id in start..=end {
+        let html = reqwest::get(format!(
+            "{}?pagination[page]={}&pagination[pageSize]=1",
+            REBASE_RPC_URL, id
+        ))
+        .await;
+        if let Ok(html) = html {
+            if let Ok(body) = html.text().await {
+                if let Ok(rebase_daily) = serde_json::from_str::<RebaseDaliy>(&body) {
+                    result.push(rebase_daily);
+                }
+            }
+        }
+    }
+
+    // result
+    result.into_iter().flat_map(|item| item.data).collect()
 }

@@ -20,6 +20,15 @@ pub struct RebaseDaliy {
 }
 
 impl RebaseDaliy {
+    /// get all current daily id
+    pub fn ids(&self) -> Vec<usize> {
+        self.data.iter().fold(vec![], |mut sum, i| {
+            sum.push(i.id);
+            sum
+        })
+    }
+
+    /// convert rebase daily to notion json value
     pub fn convert_to_json_value(&self) -> Vec<Value> {
         let mut properties = Vec::new();
 
