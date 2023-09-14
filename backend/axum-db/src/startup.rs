@@ -9,7 +9,6 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 
-use crate::routes::greet;
 use crate::routes::health_check;
 use crate::routes::index;
 
@@ -100,7 +99,6 @@ pub async fn run(
     // build our application with a single route
     let app = Router::new()
         .route("/", get(index))
-        .route("/greet/:name", get(greet))
         .route("/health_check", get(health_check))
         // .route("/subscriptions", post(subscribe))
         // .route("/subscriptions/confirm", get(confirm))
