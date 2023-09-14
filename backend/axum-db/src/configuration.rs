@@ -37,7 +37,7 @@ pub struct ApplicationSettings {
 pub fn get_configuration() -> Result<Settings> {
     let base_path = std::env::current_dir()
         .map_err(|_| anyhow::anyhow!("Failed to determine the current directory"))?;
-    dbg!(&base_path);
+
     let configuration_directory = base_path.join("backend/axum-db/configuration");
     // Detect the running environment.
     // Default to `local` if unspecified.
