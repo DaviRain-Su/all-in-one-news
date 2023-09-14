@@ -1,6 +1,5 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use anyhow::Result;
-use axum::routing::post;
 use axum::routing::IntoMakeService;
 use axum::Server;
 use axum::{routing::get, Router};
@@ -10,12 +9,9 @@ use sqlx::PgPool;
 use std::net::TcpListener;
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 
-use crate::email_client::EmailClient;
-use crate::routes::confirm;
 use crate::routes::greet;
 use crate::routes::health_check;
 use crate::routes::index;
-use crate::routes::subscribe;
 
 #[derive(Debug)]
 pub struct Application {
@@ -26,19 +22,6 @@ pub struct Application {
 impl Application {
     pub async fn build(configuration: Settings) -> Result<Self> {
         let connection_pool = get_connection_pool(&configuration.database);
-        // Build an `EmailClient` using `configuration`
-        let sender_email = configuration
-            .email_client
-            .sender()
-            .map_err(|_| anyhow::anyhow!("Invalid sender email address."))?;
-        let timeout = configuration.email_client.timeout();
-        let email_client = EmailClient::new(
-            configuration.email_client.base_url.clone(),
-            sender_email,
-            configuration.email_client.authorization_token.clone(),
-            // pass new argument from configuration
-            timeout,
-        )?;
 
         let address = format!(
             "{}:{}",
@@ -50,7 +33,6 @@ impl Application {
         let server = run(
             listener,
             connection_pool,
-            email_client,
             // new argument from configuration
             configuration.application.base_url,
         )
@@ -80,19 +62,12 @@ pub fn get_connection_pool(database_configuration: &DatabaseSettings) -> PgPool 
 #[derive(Clone)]
 struct AppState {
     database: PgPool,
-    email_client: EmailClient,
     base_url: ApplicationBaseUrl,
 }
 
 impl axum::extract::FromRef<AppState> for PgPool {
     fn from_ref(state: &AppState) -> Self {
         state.database.clone()
-    }
-}
-
-impl axum::extract::FromRef<AppState> for EmailClient {
-    fn from_ref(state: &AppState) -> Self {
-        state.email_client.clone()
     }
 }
 
@@ -112,14 +87,13 @@ pub struct ApplicationBaseUrl(pub String);
 pub async fn run(
     listener: TcpListener,
     conn_pool: PgPool,
-    email_client: EmailClient,
+    // email_client: EmailClient,
     base_url: String,
 ) -> Result<Server<AddrIncoming, IntoMakeService<Router>>> {
     tracing::debug!("listening on {}", listener.local_addr()?);
 
     let state = AppState {
         database: conn_pool,
-        email_client,
         base_url: ApplicationBaseUrl(base_url),
     };
 
@@ -128,8 +102,8 @@ pub async fn run(
         .route("/", get(index))
         .route("/greet/:name", get(greet))
         .route("/health_check", get(health_check))
-        .route("/subscriptions", post(subscribe))
-        .route("/subscriptions/confirm", get(confirm))
+        // .route("/subscriptions", post(subscribe))
+        // .route("/subscriptions/confirm", get(confirm))
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()

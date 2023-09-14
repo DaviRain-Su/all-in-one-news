@@ -1,7 +1,7 @@
+use all_in_one_news::configuration::get_configuration;
+use all_in_one_news::startup::Application;
 use anyhow::Result;
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
-use zero2prod::configuration::get_configuration;
-use zero2prod::startup::Application;
 
 #[tokio::main]
 async fn main() -> Result<()> {
