@@ -61,8 +61,7 @@ pub async fn spawn_app() -> TestApp {
         configuration.database.database_name = Uuid::new_v4().to_string();
         // use a radom port
         configuration.application.port = 0;
-        // use the mock server as the email API
-        configuration.email_client.base_url = email_server.uri();
+
         configuration
     };
 
@@ -92,12 +91,12 @@ pub async fn configure_database(config: &DatabaseSettings) -> PgPool {
         .await
         .expect("Failed to create database.");
     // Migrate database
-    let connection_pool = PgPool::connect_with(config.with_db())
+    PgPool::connect_with(config.with_db())
         .await
-        .expect("Failed to connect to Postgres.");
-    sqlx::migrate!("./migrations")
-        .run(&connection_pool)
-        .await
-        .expect("Failed to migrate the database");
-    connection_pool
+        .expect("Failed to connect to Postgres.")
+    // sqlx::migrate!("./migrations")
+    // .run(&connection_pool)
+    // .await
+    // .expect("Failed to migrate the database");
+    // connection_pool
 }
