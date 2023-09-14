@@ -1,15 +1,13 @@
-use aion_parse::rebase::types::RebaseDaliyEpisode;
-use serde::{Deserialize, Serialize};
-
 use crate::tag::Tag;
+use aion_parse::rebase::types::RebaseDaliyEpisode;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug)]
 pub struct RebaseDaliy {
     pub id: usize,
     pub author: String,
     pub episode: String,
     pub introduce: String,
-    pub time: String,
+    pub time: chrono::DateTime<chrono::Utc>,
     pub title: String,
     pub url: String,
     pub tag: Vec<Tag>,
@@ -21,7 +19,7 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
     fn try_from(episode: RebaseDaliyEpisode) -> anyhow::Result<Self> {
         let raw_time = format!("{}T00:00:00.000Z", episode.attributes.time);
         let time = raw_time.parse::<chrono::DateTime<chrono::Utc>>().unwrap();
-        let time = time.format("%Y-%m-%d").to_string();
+        // let time = time.format("%Y-%m-%d").to_string();
 
         Ok(Self {
             id: episode.id,
