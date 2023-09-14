@@ -2,6 +2,7 @@
 members = [
     "backend/axum-db",
     "frontend/web",
+    "crates/*",
 ]
 
 resolver = "2"
