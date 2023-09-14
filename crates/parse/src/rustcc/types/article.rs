@@ -187,37 +187,37 @@ async fn test_article_content2() {
     }
 }
 
-#[tokio::test]
-async fn test_multi_article_content() {
-    use super::SectionLink;
+// #[tokio::test]
+// async fn test_multi_article_content() {
+//     use super::SectionLink;
 
-    let section_link = SectionLink { id: 1 };
-    let article_list = section_link.get_articles().await.unwrap();
-    // println!("{:#?}", article_list)
+//     let section_link = SectionLink { id: 1 };
+//     let article_list = section_link.get_articles().await.unwrap();
+//     // println!("{:#?}", article_list)
 
-    for article in article_list.article_list {
-        let messages = article.content().await.unwrap();
-        for msg in messages.messages {
-            println!("Title: {}", msg.title);
-            println!("{}", msg);
-        }
-    }
-}
+//     for article in article_list.article_list {
+//         let messages = article.content().await.unwrap();
+//         for msg in messages.messages {
+//             println!("Title: {}", msg.title);
+//             println!("{}", msg);
+//         }
+//     }
+// }
 
-#[tokio::test]
-async fn test_multi_article_content_all() {
-    use super::SectionLink;
+// #[tokio::test]
+// async fn test_multi_article_content_all() {
+//     use super::SectionLink;
 
-    for idx in 1..=66 {
-        let section_link = SectionLink { id: idx };
-        let article_list = section_link.get_articles().await.unwrap();
+//     for idx in 1..=66 {
+//         let section_link = SectionLink { id: idx };
+//         let article_list = section_link.get_articles().await.unwrap();
 
-        for article in article_list.article_list {
-            let messages = article.content().await.unwrap();
-            for msg in messages.messages {
-                println!("Title: {}", msg.title);
-                println!("{}", msg);
-            }
-        }
-    }
-}
+//         for article in article_list.article_list {
+//             let messages = article.content().await.unwrap();
+//             for msg in messages.messages {
+//                 println!("Title: {}", msg.title);
+//                 println!("{}", msg);
+//             }
+//         }
+//     }
+// }

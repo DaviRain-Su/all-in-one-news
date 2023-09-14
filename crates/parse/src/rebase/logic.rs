@@ -1,15 +1,21 @@
-use super::display_notion;
+use crate::rebase::constant::REBASE_RPC_URL;
 use std::fs::File;
 use std::io::prelude::*;
 use std::sync::{Arc, Mutex};
 
+use super::types::RebaseDaliy;
+
 pub async fn process_task_range(start: usize, end: usize, file: Arc<Mutex<File>>) {
     for id in start..=end {
-        let html = reqwest::get(format!("https://db.rebase.network/api/v1/geekdailies?pagination[page]={}&pagination[pageSize]=1", id)).await;
+        let html = reqwest::get(format!(
+            "{}?pagination[page]={}&pagination[pageSize]=1",
+            REBASE_RPC_URL, id
+        ))
+        .await;
         if let Ok(html) = html {
             if let Ok(body) = html.text().await {
-                if let Ok(rebase_daily) = serde_json::from_str(&body) {
-                    let json_v = display_notion::convert_to_json_value(&rebase_daily);
+                if let Ok(rebase_daily) = serde_json::from_str::<RebaseDaliy>(&body) {
+                    let json_v = rebase_daily.convert_to_json_value();
                     for msg in json_v.iter() {
                         println!("{}", serde_json::to_string_pretty(&msg).unwrap());
                         let json_data = msg.to_string();

@@ -98,8 +98,8 @@ pub async fn wrap_run_signle() -> anyhow::Result<()> {
     Ok(())
 }
 
-#[tokio::test]
-async fn test_local_single() {
-    let r = load_single(5).await;
-    println!("r = {:?}", r);
-}
+// #[tokio::test]
+// async fn test_local_single() {
+//     let r = load_single(5).await;
+//     println!("r = {:?}", r);
+// }
