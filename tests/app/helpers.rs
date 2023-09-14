@@ -4,12 +4,12 @@ use sqlx::PgPool;
 use sqlx::{Connection, Executor, PgConnection};
 use wiremock::MockServer;
 
+use all_in_one_news::configuration::{get_configuration, DatabaseSettings};
 use uuid::Uuid;
-use zero2prod::configuration::{get_configuration, DatabaseSettings};
 
-use zero2prod::startup;
-use zero2prod::startup::get_connection_pool;
-use zero2prod::telemetry::{get_subscriber, init_subscriber};
+use all_in_one_news::startup;
+use all_in_one_news::startup::get_connection_pool;
+use all_in_one_news::telemetry::{get_subscriber, init_subscriber};
 
 // Ensure that the `tracing` stack is only initialised once using `once_cell`
 static TRACING: Lazy<()> = Lazy::new(|| {
