@@ -100,8 +100,6 @@ pub async fn run(
     let app = Router::new()
         .route("/", get(index))
         .route("/health_check", get(health_check))
-        // .route("/subscriptions", post(subscribe))
-        // .route("/subscriptions/confirm", get(confirm))
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
