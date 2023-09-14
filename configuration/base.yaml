@@ -1,0 +1,20 @@
+application:
+  port: 8000
+  host: 0.0.0.0
+  base_url: "http://127.0.0.1"
+database:
+  host: "localhost"
+  port: 5432
+  username: "postgres"
+  password: "password"
+  database_name: "newsletter"
+  require_ssl: false
+email_client:
+  base_url: "localhost"
+  sender_email: "test@gmail.com"
+  # New value!
+  # We are only setting the development value,
+  # we'll deal with the production token outside of version control
+  # (given that it's a sensitive secret!)
+  authorization_token: "2be07949-6d03-44fa-a954-f23229308e25"
+  timeout_milliseconds: 10000
