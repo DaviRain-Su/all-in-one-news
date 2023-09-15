@@ -29,6 +29,7 @@ pub async fn list_authors(
 
     match result {
         Ok(items) => {
+            // TODO: don't work
             let re = regex::Regex::new(r"\b\n").unwrap();
             let mut authors: Vec<String> = Vec::new();
             for item in items {
