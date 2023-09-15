@@ -3,7 +3,6 @@ use axum::extract::Query;
 use axum::response::IntoResponse;
 use axum::Json;
 use chrono::DateTime;
-use serde::Deserializer;
 use serde::{Serialize, Serializer};
 use sqlx::query_as;
 use sqlx::Acquire;

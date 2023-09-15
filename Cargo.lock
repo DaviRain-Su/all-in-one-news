@@ -166,6 +166,7 @@ dependencies = [
  "quickcheck",
  "quickcheck_macros",
  "rand 0.8.5",
+ "regex",
  "reqwest",
  "secrecy",
  "serde",
