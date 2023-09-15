@@ -1,4 +1,3 @@
-// use crate::routes::query::ListAllItemsResponse;
 use crate::routes::query::query_all::ListAllItemsResponse;
 use crate::routes::DatabaseConnection;
 use axum::response::IntoResponse;

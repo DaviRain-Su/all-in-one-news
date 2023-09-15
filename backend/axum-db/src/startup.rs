@@ -1,6 +1,7 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::routes::query_all::list_all_items;
 use crate::routes::query_all_author::list_authors;
+use crate::routes::query_by_tag::list_tags;
 use anyhow::Result;
 use axum::routing::IntoMakeService;
 use axum::Server;
@@ -103,6 +104,7 @@ pub async fn run(
         .route("/health_check", get(health_check))
         .route("/list", get(list_all_items))
         .route("/authors", get(list_authors))
+        .route("/tags", get(list_tags))
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
