@@ -12,7 +12,7 @@ dioxus-web = "0.4.0"
 reqwest = { version = "0.11.20", features = ["json", "blocking"] }
 
 # aion
-aion-types = { version = "0.1.0", path = "../../crates/aion-types" }
+serde = { version = "1.0.188", features = ["derive"] }
 anyhow = "1.0.75"
 serde_json = "1.0.107"
 getrandom = { version = "0.2", features = ["js"] }

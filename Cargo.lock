@@ -137,13 +137,13 @@ dependencies = [
 name = "all-in-one-new-front"
 version = "0.1.0"
 dependencies = [
- "aion-types",
  "anyhow",
  "chrono",
  "dioxus",
  "dioxus-web",
  "getrandom 0.2.10",
  "reqwest",
+ "serde",
  "serde_json",
  "tokio",
 ]

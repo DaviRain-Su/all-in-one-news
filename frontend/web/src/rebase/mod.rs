@@ -1,4 +1,6 @@
-use aion_types::rebase::response::ListAllItemsResponse;
+pub mod types;
+
+use types::ListAllItemsResponse;
 
 pub async fn get_latest_news() -> anyhow::Result<Vec<ListAllItemsResponse>> {
     let resonse = reqwest::get("http://127.0.0.1:8000/latest")
