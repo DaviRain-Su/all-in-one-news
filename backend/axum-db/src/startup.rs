@@ -3,6 +3,7 @@ use crate::routes::query_all::list_all_items;
 use crate::routes::query_all_author::list_authors;
 use crate::routes::query_by_tag::list_tags;
 use crate::routes::query_by_time::list_by_time;
+use crate::routes::query_latest_news::list_latest_news;
 use anyhow::Result;
 use axum::routing::IntoMakeService;
 use axum::Server;
@@ -106,8 +107,8 @@ pub async fn run(
         .route("/list", get(list_all_items))
         .route("/authors", get(list_authors))
         .route("/tags", get(list_tags))
-        // todo (query have problem)
-        .route("/time", get(list_by_time))
+        .route("/time", get(list_by_time)) // todo (query have problem)
+        .route("/latest", get(list_latest_news))
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
