@@ -41,9 +41,14 @@ pub async fn get_section_links() -> anyhow::Result<SectionLinkList> {
     Ok(secion_links)
 }
 
-#[tokio::test]
-#[ignore = ""]
-async fn test_get_section_links() {
-    let r = get_section_links().await.unwrap();
-    println!("{}", r);
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    #[tokio::test]
+    #[ignore = ""]
+    async fn test_get_section_links() {
+        let r = get_section_links().await.unwrap();
+        println!("{}", r);
+    }
 }

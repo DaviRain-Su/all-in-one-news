@@ -12,7 +12,12 @@ pub async fn health_check() -> anyhow::Result<StatusCode> {
     Ok(response.status())
 }
 
-#[tokio::test]
-async fn test_health_check() {
-    assert!(health_check().await.is_ok());
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_health_check() {
+        assert!(health_check().await.is_ok());
+    }
 }

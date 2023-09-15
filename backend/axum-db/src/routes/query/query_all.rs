@@ -1,9 +1,8 @@
 use crate::routes::DatabaseConnection;
+use aion_types::rebase::response::ListAllItemsResponse;
 use axum::extract::Query;
 use axum::response::IntoResponse;
 use axum::Json;
-use chrono::DateTime;
-use serde::{Serialize, Serializer};
 use sqlx::query_as;
 use sqlx::Acquire;
 
@@ -11,41 +10,6 @@ use sqlx::Acquire;
 pub struct ListAllItemsQuery {
     page: i64,
     per_page: i64,
-}
-
-// 自定义序列化器
-fn serialize_datetime<S>(datetime: &DateTime<chrono::Utc>, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    // 将 DateTime<Utc> 格式化为 RFC3339 格式的字符串
-    let formatted = datetime.to_rfc3339();
-
-    // 调用 Serializer 的 `serialize_str` 方法将字符串序列化为 JSON 字符串
-    serializer.serialize_str(&formatted)
-}
-
-fn serialize_id_as_num<S>(id: &i32, serializer: S) -> Result<S::Ok, S::Error>
-where
-    S: Serializer,
-{
-    serializer.serialize_i32(*id)
-}
-
-#[derive(Debug, Serialize)]
-pub struct ListAllItemsResponse {
-    #[serde(
-            serialize_with = "serialize_id_as_num" // 序列化时输出为数字
-        )]
-    pub id: i32,
-    pub author: String,
-    pub episode: String,
-    pub introduce: String,
-    #[serde(serialize_with = "serialize_datetime")]
-    pub time: DateTime<chrono::Utc>,
-    pub title: String,
-    pub url: String,
-    pub tag: Vec<String>,
 }
 
 pub async fn list_all_items(

@@ -76,18 +76,24 @@ pub async fn parse_tag(content: &str, loop_index: usize) -> anyhow::Result<Vec<T
     Ok(result)
 }
 
-#[tokio::test]
-#[ignore = "need provider openai key"]
-async fn test_parse_tag() {
-    let content = "PeerDAS，一个简单的数据可用采样方法。通过复用已有的P2P网络来实现数据可用采样。";
-    let _tags = parse_tag(content, 3).await.unwrap();
-    println!("{:?}", _tags);
-}
+#[cfg(test)]
+pub mod tests {
+    use super::*;
 
-#[tokio::test]
-#[ignore = "need provider openai key"]
-async fn test_parse_tag2() {
-    let content = "ERC-6551 是一个为每个 ERC-721 代币（NFT）提供智能合约账户的系统。它可被认为是一种能够将 NFT 变成钱包的技术 —— 本质上就是「NFT as wallet」。Loot Adventure 撰文盘点链游领域与 ERC-6551 结合的案例";
-    let _tags = parse_tag(content, 3).await.unwrap();
-    println!("{:?}", _tags);
+    #[tokio::test]
+    #[ignore = "need provider openai key"]
+    async fn test_parse_tag() {
+        let content =
+            "PeerDAS，一个简单的数据可用采样方法。通过复用已有的P2P网络来实现数据可用采样。";
+        let _tags = parse_tag(content, 3).await.unwrap();
+        println!("{:?}", _tags);
+    }
+
+    #[tokio::test]
+    #[ignore = "need provider openai key"]
+    async fn test_parse_tag2() {
+        let content = "ERC-6551 是一个为每个 ERC-721 代币（NFT）提供智能合约账户的系统。它可被认为是一种能够将 NFT 变成钱包的技术 —— 本质上就是「NFT as wallet」。Loot Adventure 撰文盘点链游领域与 ERC-6551 结合的案例";
+        let _tags = parse_tag(content, 3).await.unwrap();
+        println!("{:?}", _tags);
+    }
 }

@@ -10,10 +10,7 @@ chrono = { version = "0.4.30", features = ["rkyv"] }
 serde = { version = "1.0.188", features = ["derive"] }
 aion-parse = { path = "../parse" }
 anyhow = "1.0.75"
-llama2_rs = "0.1.1"
 async-openai = "0.14.1"
-tokio = { version = "1", features = ["full"] }
-
 
 [dependencies.sqlx]
 version = "0.7"
@@ -27,6 +24,9 @@ features = [
     "runtime-tokio",
     "tls-rustls",
 ]
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
 
 [features]
 openai = []

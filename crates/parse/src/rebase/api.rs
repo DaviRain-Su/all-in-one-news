@@ -14,8 +14,13 @@ pub async fn total_count() -> anyhow::Result<usize> {
     Ok(json.total_count())
 }
 
-#[tokio::test]
-async fn test_total_count() {
-    let count = total_count().await.unwrap();
-    println!("total count: {}", count);
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    #[tokio::test]
+    async fn test_total_count() {
+        let count = total_count().await.unwrap();
+        println!("total count: {}", count);
+    }
 }

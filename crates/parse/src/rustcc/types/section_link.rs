@@ -77,10 +77,15 @@ impl SectionLinkList {
     }
 }
 
-#[tokio::test]
-#[ignore = ""]
-async fn test_get_first_article() {
-    let section_link = SectionLink { id: 1 };
-    let article_list = section_link.get_articles().await.unwrap();
-    println!("{:#?}", article_list)
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    #[tokio::test]
+    #[ignore = ""]
+    async fn test_get_first_article() {
+        let section_link = SectionLink { id: 1 };
+        let article_list = section_link.get_articles().await.unwrap();
+        println!("{:#?}", article_list)
+    }
 }

@@ -1,5 +1,5 @@
-use crate::routes::query::query_all::ListAllItemsResponse;
 use crate::routes::DatabaseConnection;
+use aion_types::rebase::response::ListAllItemsResponse;
 use axum::extract::Query;
 use axum::response::IntoResponse;
 use axum::Json;

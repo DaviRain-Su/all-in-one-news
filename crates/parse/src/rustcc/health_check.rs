@@ -7,9 +7,14 @@ pub async fn health_check() -> anyhow::Result<StatusCode> {
     Ok(response.status())
 }
 
-#[tokio::test]
-#[ignore = ""]
-async fn test_health_check() {
-    let status = health_check().await.unwrap();
-    assert_eq!(status, StatusCode::OK);
+#[cfg(test)]
+pub mod tests {
+    use super::*;
+
+    #[tokio::test]
+    #[ignore = ""]
+    async fn test_health_check() {
+        let status = health_check().await.unwrap();
+        assert_eq!(status, StatusCode::OK);
+    }
 }

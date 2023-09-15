@@ -2,6 +2,8 @@
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
 
+pub mod rebase;
+
 fn main() {
     // launch the web app
     dioxus_web::launch(App);
@@ -15,15 +17,11 @@ fn App(cx: Scope) -> Element {
     let time = chrono::Utc::now();
     let comments = "comments";
 
-    cx.render(rsx! {
+    render! {
         div {
-            "Hello, world!"
-        }
-        div {
-            "Hello, Rust!"
-        }
-        div {
+            padding: "0.5rem",
+            position: "relative",
             "{title} by {by} ({score}) {time} {comments}"
         }
-    })
+    }
 }
