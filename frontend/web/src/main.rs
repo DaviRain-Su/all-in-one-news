@@ -3,6 +3,9 @@
 use dioxus::prelude::*;
 
 pub mod rebase;
+pub mod story;
+
+use story::*;
 
 fn main() {
     // launch the web app
@@ -11,17 +14,20 @@ fn main() {
 
 // create a component that renders a div with the text "Hello, world!"
 fn App(cx: Scope) -> Element {
-    let title = "title";
-    let by = "author";
-    let score = 0;
-    let time = chrono::Utc::now();
-    let comments = "comments";
-
     render! {
-        div {
-            padding: "0.5rem",
-            position: "relative",
-            "{title} by {by} ({score}) {time} {comments}"
+        StoryListing {
+            story: StoryItem {
+                id: 0,
+                title: "hello hackernews".to_string(),
+                url: None,
+                text: None,
+                by: "Author".to_string(),
+                score: 0,
+                descendants: 0,
+                time: chrono::Utc::now(),
+                kids: vec![],
+                r#type: "".to_string(),
+            }
         }
     }
 }

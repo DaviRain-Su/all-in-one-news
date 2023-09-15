@@ -743,6 +743,7 @@ dependencies = [
  "js-sys",
  "num-traits",
  "rkyv",
+ "serde",
  "wasm-bindgen",
  "windows-targets",
 ]
