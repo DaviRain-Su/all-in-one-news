@@ -1,14 +1,16 @@
+#![allow(clippy::await_holding_lock)]
+
 use aion_parse::rebase::get_total_rebase_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use all_in_one_news::configuration::get_configuration;
-use all_in_one_news::startup::get_connection_pool;
+// use all_in_one_news::startup::get_connection_pool;
 use all_in_one_news::startup::Application;
 use anyhow::Result;
 use sqlx::PgPool;
 use std::sync::Arc;
 use std::sync::Mutex;
-use std::time::Duration;
-use tokio::{task, time};
+// use std::time::Duration;
+// use tokio::{task, time};
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 use uuid::Uuid;
 
@@ -93,8 +95,8 @@ async fn main() -> Result<()> {
 
     let configuration = get_configuration()?;
 
-    let pg_pool = get_connection_pool(&configuration.database);
-    let pg = Arc::new(Mutex::new(pg_pool));
+    // let pg_pool = get_connection_pool(&configuration.database);
+    // let pg = Arc::new(Mutex::new(pg_pool));
 
     // let task = task::spawn(async move {
     //     loop {

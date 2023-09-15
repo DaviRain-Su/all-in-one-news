@@ -130,6 +130,7 @@ dependencies = [
  "chrono",
  "llama2_rs",
  "serde",
+ "sqlx",
  "tokio",
 ]
 

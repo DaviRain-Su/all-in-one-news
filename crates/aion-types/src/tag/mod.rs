@@ -23,6 +23,12 @@ impl TryFrom<&str> for Tag {
     }
 }
 
+impl From<String> for Tag {
+    fn from(tag: String) -> Self {
+        Tag::try_from(tag.as_str()).unwrap()
+    }
+}
+
 impl Display for Tag {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> std::fmt::Result {
         match self {

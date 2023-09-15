@@ -14,5 +14,19 @@ llama2_rs = "0.1.1"
 async-openai = "0.14.1"
 tokio = { version = "1", features = ["full"] }
 
+
+[dependencies.sqlx]
+version = "0.7"
+default-features = false
+features = [
+    "macros",
+    "postgres",
+    "uuid",
+    "chrono",
+    "migrate",
+    "runtime-tokio",
+    "tls-rustls",
+]
+
 [features]
 openai = []
