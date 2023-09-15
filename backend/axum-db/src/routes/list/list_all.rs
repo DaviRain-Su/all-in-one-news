@@ -3,6 +3,7 @@ use axum::extract::Query;
 use axum::response::IntoResponse;
 use axum::Json;
 use chrono::DateTime;
+use serde::Deserializer;
 use serde::{Serialize, Serializer};
 use sqlx::query_as;
 use sqlx::Acquire;
@@ -25,8 +26,19 @@ where
     serializer.serialize_str(&formatted)
 }
 
+fn serialize_id_as_num<S>(id: &i32, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    serializer.serialize_i32(*id)
+}
+
 #[derive(Debug, Serialize)]
 pub struct ListAllItemsResponse {
+    #[serde(
+            serialize_with = "serialize_id_as_num" // 序列化时输出为数字
+        )]
+    pub id: i32,
     pub author: String,
     pub episode: String,
     pub introduce: String,
@@ -34,6 +46,7 @@ pub struct ListAllItemsResponse {
     pub time: DateTime<chrono::Utc>,
     pub title: String,
     pub url: String,
+    pub tag: Vec<String>,
 }
 
 pub async fn list_all_items(
@@ -51,7 +64,7 @@ pub async fn list_all_items(
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT author, episode, introduce, time, title, url FROM new_rebase_daily OFFSET $1 LIMIT $2",
+        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rebase_daily OFFSET $1 LIMIT $2",
         offset,
         limit
     )
