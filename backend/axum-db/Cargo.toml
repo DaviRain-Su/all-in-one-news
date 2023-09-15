@@ -47,6 +47,7 @@ static_assertions = "1.1.0"
 validator = "0.16.1"
 reqwest = { version = "0.11", default-features = false, features = ["json", "rustls-tls"]}
 regex = "1"
+utoipa-swagger-ui = { version = "3", features = ["axum"] }
 
 # aion
 aion-types = { version = "0.1.0", path = "../../crates/aion-types" }
