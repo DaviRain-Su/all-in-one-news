@@ -1,6 +1,9 @@
 use crate::routes::DatabaseConnection;
 use axum::extract::Query;
+use axum::response::IntoResponse;
 use axum::Json;
+use chrono::DateTime;
+use serde::{Serialize, Serializer};
 use sqlx::query_as;
 use sqlx::Acquire;
 
@@ -10,12 +13,25 @@ pub struct ListAllItemsQuery {
     per_page: i64,
 }
 
-#[derive(Debug)]
+// 自定义序列化器
+fn serialize_datetime<S>(datetime: &DateTime<chrono::Utc>, serializer: S) -> Result<S::Ok, S::Error>
+where
+    S: Serializer,
+{
+    // 将 DateTime<Utc> 格式化为 RFC3339 格式的字符串
+    let formatted = datetime.to_rfc3339();
+
+    // 调用 Serializer 的 `serialize_str` 方法将字符串序列化为 JSON 字符串
+    serializer.serialize_str(&formatted)
+}
+
+#[derive(Debug, Serialize)]
 pub struct ListAllItemsResponse {
     pub author: String,
     pub episode: String,
     pub introduce: String,
-    pub time: chrono::DateTime<chrono::Utc>,
+    #[serde(serialize_with = "serialize_datetime")]
+    pub time: DateTime<chrono::Utc>,
     pub title: String,
     pub url: String,
 }
@@ -23,7 +39,7 @@ pub struct ListAllItemsResponse {
 pub async fn list_all_items(
     DatabaseConnection(mut conn_pool): DatabaseConnection,
     Query(query): Query<ListAllItemsQuery>,
-) -> Result<Json<Vec<ListAllItemsResponse>>, axum::http::StatusCode> {
+) -> impl IntoResponse {
     let connection_pool = conn_pool
         .acquire()
         .await
