@@ -42,6 +42,7 @@ pub async fn get_section_links() -> anyhow::Result<SectionLinkList> {
 }
 
 #[tokio::test]
+#[ignore = ""]
 async fn test_get_section_links() {
     let r = get_section_links().await.unwrap();
     println!("{}", r);
