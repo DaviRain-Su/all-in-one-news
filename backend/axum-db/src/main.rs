@@ -25,7 +25,7 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<Mutex<PgPool>>) 
     // 执行插入操作
     // 检查是否已存在相同 ID 的记录
     let existing_record = sqlx::query!(
-        "SELECT id FROM rebase_daily WHERE id = $1",
+        "SELECT id FROM new_rebase_daily WHERE id = $1",
         rebase_daily.id as i32
     )
     .fetch_optional(connection_pool.as_mut())
@@ -44,7 +44,7 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<Mutex<PgPool>>) 
                 .collect::<Vec<String>>();
             let result = sqlx::query!(
                    r#"
-                   INSERT INTO rebase_daily (key_id, id, author, episode, introduce, time, title, url, tag)
+                   INSERT INTO new_rebase_daily (key_id, id, author, episode, introduce, time, title, url, tag)
                    VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                    "#,
                    key_id,
@@ -104,12 +104,12 @@ async fn main() -> Result<()> {
     //     }
     // });
     //
-    process_load_all_rebase_daily(pg).await?;
+    // process_load_all_rebase_daily(pg).await?;
 
-    // let service = Application::build(configuration).await?;
-    // println!("🌟🌟🌟🌟🌟🌟 Server is running on port 8000 🌟🌟🌟🌟🌟");
+    let service = Application::build(configuration).await?;
+    println!("🌟🌟🌟🌟🌟🌟 Server is running on port 8000 🌟🌟🌟🌟🌟");
 
-    // service.run_until_stopped().await?;
+    service.run_until_stopped().await?;
 
     // task.await?;
 

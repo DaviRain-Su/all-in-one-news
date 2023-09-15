@@ -8,7 +8,32 @@ use crate::rebase::types::RebaseDaliyEpisode;
 
 /// get total rebase daily episode
 pub async fn get_total_rebase_daily_episode() -> anyhow::Result<Vec<RebaseDaliyEpisode>> {
-    let start = 1;
-    let end = api::total_count().await?;
-    Ok(logic::parse_rebase_data(start, end).await)
+    let cpu_count = num_cpus::get();
+    let task_count = api::total_count().await?; // Total tasks to be processed
+
+    let tasks_per_thread = task_count / cpu_count;
+
+    let mut tasks = vec![];
+
+    let mut reuslt_rebase_daily_episode = vec![];
+
+    for i in 0..cpu_count {
+        let start = i * tasks_per_thread;
+        let end = if i == cpu_count - 1 {
+            task_count - 1
+        } else {
+            (i + 1) * tasks_per_thread - 1
+        };
+
+        let task = tokio::spawn(async move { logic::parse_rebase_data(start, end).await });
+
+        tasks.push(task);
+    }
+
+    for task in tasks {
+        let mut result = task.await?;
+        reuslt_rebase_daily_episode.append(&mut result);
+    }
+
+    Ok(reuslt_rebase_daily_episode)
 }

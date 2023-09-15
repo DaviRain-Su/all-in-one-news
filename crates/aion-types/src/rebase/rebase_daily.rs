@@ -19,7 +19,6 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
     fn try_from(episode: RebaseDaliyEpisode) -> anyhow::Result<Self> {
         let raw_time = format!("{}T00:00:00.000Z", episode.attributes.time);
         let time = raw_time.parse::<chrono::DateTime<chrono::Utc>>().unwrap();
-        // let time = time.format("%Y-%m-%d").to_string();
 
         Ok(Self {
             id: episode.id,
