@@ -50,7 +50,7 @@ reqwest = { version = "0.11", default-features = false, features = ["json", "rus
 
 # aion
 aion-types = { version = "0.1.0", path = "../../crates/aion-types" }
-
+aion-parse = { version = "0.1.0", path = "../../crates/parse" }
 
 [dependencies.sqlx]
 version = "0.7"

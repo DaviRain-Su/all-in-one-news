@@ -44,6 +44,7 @@ pub async fn parse_rebase_data(start: usize, end: usize) -> Vec<RebaseDaliyEpiso
         if let Ok(html) = html {
             if let Ok(body) = html.text().await {
                 if let Ok(rebase_daily) = serde_json::from_str::<RebaseDaliy>(&body) {
+                    println!("rebase_daily: {:?}", rebase_daily);
                     result.push(rebase_daily);
                 }
             }

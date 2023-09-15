@@ -146,6 +146,7 @@ dependencies = [
 name = "all-in-one-news"
 version = "0.1.0"
 dependencies = [
+ "aion-parse",
  "aion-types",
  "anyhow",
  "askama",
