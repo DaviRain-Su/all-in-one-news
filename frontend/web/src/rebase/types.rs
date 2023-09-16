@@ -33,7 +33,7 @@ where
         .map(|dt| dt.with_timezone(&Utc))
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
 pub struct ListAllItemsResponse {
     #[serde(
             serialize_with = "serialize_id_as_num" // 序列化时输出为数字

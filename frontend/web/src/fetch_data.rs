@@ -1,69 +1,39 @@
-// Define the Hackernews API
-use crate::Comment;
-use crate::PreviewState;
-use crate::StoryItem;
-use crate::StoryPageData;
-use dioxus::prelude::*;
-use futures::future::join_all;
+// Define rebase api
+use crate::rebase::types::ListAllItemsResponse;
 
-pub static BASE_API_URL: &str = "https://hacker-news.firebaseio.com/v0/";
-pub static ITEM_API: &str = "item/";
-pub static USER_API: &str = "user/";
-const COMMENT_DEPTH: i64 = 2;
+pub static BASE_API_URL: &str = "http://127.0.0.1:8000";
 
-pub async fn get_story_preview(id: i64) -> Result<StoryItem, reqwest::Error> {
-    let url = format!("{}item/{}.json", BASE_API_URL, id);
-    reqwest::get(&url).await?.json().await
+pub async fn get_latest_new() -> anyhow::Result<Vec<ListAllItemsResponse>> {
+    let url = format!("{}/latest", BASE_API_URL);
+    reqwest::get(&url).await?.json().await.map_err(|e| e.into())
 }
 
-pub async fn get_stories(count: usize) -> Result<Vec<StoryItem>, reqwest::Error> {
-    let url = format!("{}topstories.json", BASE_API_URL);
-    let stories_ids = &reqwest::get(&url).await?.json::<Vec<i64>>().await?[..count];
-
-    let story_futures = stories_ids[..usize::min(stories_ids.len(), count)]
-        .iter()
-        .map(|&story_id| get_story_preview(story_id));
-    let stories = join_all(story_futures)
+pub async fn get_new_by_id(id: i32) -> anyhow::Result<ListAllItemsResponse> {
+    let url = format!("{}/by_id?id={}", BASE_API_URL, id);
+    let rebase_daily = reqwest::get(&url)
+        .await?
+        .json::<Vec<ListAllItemsResponse>>()
         .await
-        .into_iter()
-        .filter_map(|story| story.ok())
-        .collect();
-    Ok(stories)
+        .map_err(|e| anyhow::anyhow!(e))?;
+
+    assert_eq!(rebase_daily.len(), 1);
+
+    Ok(rebase_daily.first().unwrap().clone())
 }
 
-pub async fn get_story(id: i64) -> Result<StoryPageData, reqwest::Error> {
-    let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
-    let mut story = reqwest::get(&url).await?.json::<StoryPageData>().await?;
-    let comment_futures = story.item.kids.iter().map(|&id| get_comment(id));
-    let comments = join_all(comment_futures)
-        .await
-        .into_iter()
-        .filter_map(|c| c.ok())
-        .collect();
+#[cfg(test)]
+mod tests {
 
-    story.comments = comments;
-    Ok(story)
-}
+    #[tokio::test]
+    async fn test_get_new_by_id() {
+        let story = crate::fetch_data::get_new_by_id(4372).await.unwrap();
 
-#[async_recursion::async_recursion(?Send)]
-pub async fn get_comment_with_depth(id: i64, depth: i64) -> Result<Comment, reqwest::Error> {
-    let url = format!("{}{}{}.json", BASE_API_URL, ITEM_API, id);
-    let mut comment = reqwest::get(&url).await?.json::<Comment>().await?;
-    if depth > 0 {
-        let sub_comments_futures = comment
-            .kids
-            .iter()
-            .map(|story_id| get_comment_with_depth(*story_id, depth - 1));
-        comment.sub_comments = join_all(sub_comments_futures)
-            .await
-            .into_iter()
-            .filter_map(|c| c.ok())
-            .collect();
+        println!("{:?}", story);
     }
-    Ok(comment)
-}
 
-pub async fn get_comment(comment_id: i64) -> Result<Comment, reqwest::Error> {
-    let comment = get_comment_with_depth(comment_id, COMMENT_DEPTH).await?;
-    Ok(comment)
+    #[tokio::test]
+    async fn test_get_latest_new() {
+        let stories = crate::fetch_data::get_latest_new().await.unwrap();
+        println!("{:?}", stories);
+    }
 }

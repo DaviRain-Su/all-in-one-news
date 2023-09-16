@@ -1,101 +1,45 @@
-use crate::fetch_data::get_story;
+use crate::fetch_data::get_new_by_id;
+use crate::rebase::types::ListAllItemsResponse;
 use crate::PreviewState;
-use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
-use serde::{Deserialize, Serialize};
-
-// Define the Hackernews types
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StoryPageData {
-    #[serde(flatten)]
-    pub item: StoryItem,
-    #[serde(default)]
-    pub comments: Vec<Comment>,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Comment {
-    pub id: i64,
-    /// there will be no by field if the comment was deleted
-    #[serde(default)]
-    pub by: String,
-    #[serde(default)]
-    pub text: String,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub time: DateTime<Utc>,
-    #[serde(default)]
-    pub kids: Vec<i64>,
-    #[serde(default)]
-    pub sub_comments: Vec<Comment>,
-    pub r#type: String,
-}
-
-#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct StoryItem {
-    pub id: i64,
-    pub title: String,
-    pub url: Option<String>,
-    pub text: Option<String>,
-    #[serde(default)]
-    pub by: String,
-    #[serde(default)]
-    pub score: i64,
-    #[serde(default)]
-    pub descendants: i64,
-    #[serde(with = "chrono::serde::ts_seconds")]
-    pub time: DateTime<Utc>,
-    #[serde(default)]
-    pub kids: Vec<i64>,
-    pub r#type: String,
-}
 
 async fn resolve_story(
-    full_story: UseRef<Option<StoryPageData>>,
+    full_rebase: UseRef<Option<ListAllItemsResponse>>,
     preview_state: UseSharedState<PreviewState>,
-    story_id: i64,
+    id: i32,
 ) {
-    if let Some(cached) = &*full_story.read() {
+    if let Some(cached) = &*full_rebase.read() {
         *preview_state.write() = PreviewState::Loaded(cached.clone());
         return;
     }
 
     *preview_state.write() = PreviewState::Loading;
-    if let Ok(story) = get_story(story_id).await {
+    if let Ok(story) = get_new_by_id(id).await {
         *preview_state.write() = PreviewState::Loaded(story.clone());
-        *full_story.write() = Some(story);
+        *full_rebase.write() = Some(story);
     }
 }
 
 #[inline_props]
-pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
+pub fn StoryListing(cx: Scope, rebase_list: ListAllItemsResponse) -> Element {
     let preview_state = use_shared_state::<PreviewState>(cx).unwrap();
-    let StoryItem {
+    let ListAllItemsResponse {
+        id,
+        author: by,
+        episode: _,
+        introduce: _,
+        time,
         title,
         url,
-        by,
-        score,
-        time,
-        kids,
-        id,
-        ..
-    } = story;
-    let full_story = use_ref(cx, || None);
+        tag: _,
+    } = rebase_list;
 
-    let url = url.as_deref().unwrap_or_default();
+    let full_story = use_ref(cx, || None);
     let hostname = url
         .trim_start_matches("https://")
         .trim_start_matches("http://")
         .trim_start_matches("www.");
-    let score = format!("{score} {}", if *score == 1 { " point" } else { " points" });
-    let comments = format!(
-        "{} {}",
-        kids.len(),
-        if kids.len() == 1 {
-            " comment"
-        } else {
-            " comments"
-        }
-    );
+
     let time = time.format("%D %l:%M %p");
 
     cx.render(rsx! {
@@ -108,9 +52,9 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
             div {
                 font_size: "1.5rem",
                 a {
-                    href: url,
+                    href: url.as_str(),
                     onfocus: move |_event| {
-                        resolve_story(full_story.clone(), preview_state.clone(), *id)
+                        resolve_story(full_story.clone(), preview_state.clone(),*id)
                     },
                     "{title}"
                 }
@@ -126,19 +70,12 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
                 flex_direction: "row",
                 color: "gray",
                 div {
-                    "{score}"
-                }
-                div {
                     padding_left: "0.5rem",
                     "by {by}"
                 }
                 div {
                     padding_left: "0.5rem",
                     "{time}"
-                }
-                div {
-                    padding_left: "0.5rem",
-                    "{comments}"
                 }
             }
         }

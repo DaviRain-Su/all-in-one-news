@@ -1,12 +1,13 @@
 #![allow(non_snake_case)]
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
+use fetch_data::get_latest_new;
 
 pub mod fetch_data;
 pub mod rebase;
 pub mod story;
 
-use crate::fetch_data::get_stories;
+use crate::rebase::types::ListAllItemsResponse;
 use story::*;
 
 fn main() {
@@ -36,13 +37,13 @@ fn App(cx: Scope) -> Element {
 
 // New
 fn Stories(cx: Scope) -> Element {
-    let story = use_future(cx, (), |_| get_stories(10));
+    let story = use_future(cx, (), |_| get_latest_new());
 
     match story.value() {
         Some(Ok(list)) => render! {
             div {
                 for story in list {
-                    StoryListing { story: story.clone() }
+                    StoryListing { rebase_list: story.clone() }
                 }
             }
         },
@@ -56,7 +57,7 @@ fn Stories(cx: Scope) -> Element {
 enum PreviewState {
     Unset,
     Loading,
-    Loaded(StoryPageData),
+    Loaded(ListAllItemsResponse),
 }
 
 // New
@@ -72,9 +73,9 @@ fn Preview(cx: Scope) -> Element {
             "Loading..."
         },
         PreviewState::Loaded(story) => {
-            let title = &story.item.title;
-            let url = story.item.url.as_deref().unwrap_or_default();
-            let text = story.item.text.as_deref().unwrap_or_default();
+            let title = &story.title;
+            let url = &story.url;
+            let text = &story.introduce;
             render! {
                 div {
                     padding: "0.5rem",
@@ -88,29 +89,7 @@ fn Preview(cx: Scope) -> Element {
                     div {
                         dangerous_inner_html: "{text}",
                     }
-                    for comment in &story.comments {
-                        Comment { comment: comment.clone() }
-                    }
                 }
-            }
-        }
-    }
-}
-
-#[inline_props]
-fn Comment(cx: Scope, comment: Comment) -> Element<'a> {
-    render! {
-        div {
-            padding: "0.5rem",
-            div {
-                color: "gray",
-                "by {comment.by}"
-            }
-            div {
-                dangerous_inner_html: "{comment.text}"
-            }
-            for kid in &comment.sub_comments {
-                Comment { comment: kid.clone() }
             }
         }
     }

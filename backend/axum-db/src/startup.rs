@@ -1,10 +1,12 @@
 use crate::configuration::{DatabaseSettings, Settings};
 use crate::routes::query_all::list_all_items;
 use crate::routes::query_all_author::list_authors;
+use crate::routes::query_by_id::list_by_id;
 use crate::routes::query_by_tag::list_tags;
 use crate::routes::query_by_time::list_by_time;
 use crate::routes::query_latest_news::list_latest_news;
 use anyhow::Result;
+use axum::http::{HeaderValue, Method};
 use axum::routing::IntoMakeService;
 use axum::Server;
 use axum::{routing::get, Router};
@@ -12,6 +14,7 @@ use hyper::server::conn::AddrIncoming;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
+use tower_http::cors::CorsLayer;
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
 
 use crate::routes::health_check;
@@ -109,10 +112,22 @@ pub async fn run(
         .route("/tags", get(list_tags))
         .route("/time", get(list_by_time)) // todo (query have problem)
         .route("/latest", get(list_latest_news))
+        .route("/by_id", get(list_by_id))
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
                 .make_span_with(DefaultMakeSpan::default().include_headers(true)),
+        )
+        .layer(
+            // see https://docs.rs/tower-http/latest/tower_http/cors/index.html
+            // for more details
+            //
+            // pay attention that for some request types like posting content-type: application/json
+            // it is required to add ".allow_headers([http::header::CONTENT_TYPE])"
+            // or see this issue https://github.com/tokio-rs/axum/issues/849
+            CorsLayer::new()
+                .allow_origin("http://127.0.0.1:8000".parse::<HeaderValue>().unwrap())
+                .allow_methods([Method::GET]),
         )
         .with_state(state);
 
