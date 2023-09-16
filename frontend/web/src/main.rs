@@ -2,9 +2,11 @@
 // import the prelude to get access to the `rsx!` macro and the `Scope` and `Element` types
 use dioxus::prelude::*;
 
+pub mod fetch_data;
 pub mod rebase;
 pub mod story;
 
+use crate::fetch_data::get_stories;
 use story::*;
 
 fn main() {
@@ -14,6 +16,7 @@ fn main() {
 
 // create a component that renders a div with the text "Hello, world!"
 fn App(cx: Scope) -> Element {
+    use_shared_state_provider(cx, || PreviewState::Unset);
     cx.render(rsx! {
         div {
             display: "flex",
@@ -33,21 +36,18 @@ fn App(cx: Scope) -> Element {
 
 // New
 fn Stories(cx: Scope) -> Element {
-    render! {
-        StoryListing {
-            story: StoryItem {
-                id: 0,
-                title: "hello hackernews".to_string(),
-                url: None,
-                text: None,
-                by: "Author".to_string(),
-                score: 0,
-                descendants: 0,
-                time: chrono::Utc::now(),
-                kids: vec![],
-                r#type: "".to_string(),
+    let story = use_future(cx, (), |_| get_stories(10));
+
+    match story.value() {
+        Some(Ok(list)) => render! {
+            div {
+                for story in list {
+                    StoryListing { story: story.clone() }
+                }
             }
-        }
+        },
+        Some(Err(err)) => render! {"An error occurred while fetching stories {err}"},
+        None => render! {"Loading items"},
     }
 }
 
@@ -61,8 +61,10 @@ enum PreviewState {
 
 // New
 fn Preview(cx: Scope) -> Element {
-    let preview_state = PreviewState::Unset;
-    match preview_state {
+    // New
+    let preview_state = use_shared_state::<PreviewState>(cx)?;
+
+    match &*preview_state.read() {
         PreviewState::Unset => render! {
             "Hover over a story to preview it here"
         },
@@ -86,10 +88,29 @@ fn Preview(cx: Scope) -> Element {
                     div {
                         dangerous_inner_html: "{text}",
                     }
-                    // for comment in &story.comments {
-                        // Comment { comment: comment.clone() }
-                    // }
+                    for comment in &story.comments {
+                        Comment { comment: comment.clone() }
+                    }
                 }
+            }
+        }
+    }
+}
+
+#[inline_props]
+fn Comment(cx: Scope, comment: Comment) -> Element<'a> {
+    render! {
+        div {
+            padding: "0.5rem",
+            div {
+                color: "gray",
+                "by {comment.by}"
+            }
+            div {
+                dangerous_inner_html: "{comment.text}"
+            }
+            for kid in &comment.sub_comments {
+                Comment { comment: kid.clone() }
             }
         }
     }

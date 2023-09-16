@@ -1,3 +1,5 @@
+use crate::fetch_data::get_story;
+use crate::PreviewState;
 use chrono::{DateTime, Utc};
 use dioxus::prelude::*;
 use serde::{Deserialize, Serialize};
@@ -47,8 +49,26 @@ pub struct StoryItem {
     pub r#type: String,
 }
 
+async fn resolve_story(
+    full_story: UseRef<Option<StoryPageData>>,
+    preview_state: UseSharedState<PreviewState>,
+    story_id: i64,
+) {
+    if let Some(cached) = &*full_story.read() {
+        *preview_state.write() = PreviewState::Loaded(cached.clone());
+        return;
+    }
+
+    *preview_state.write() = PreviewState::Loading;
+    if let Ok(story) = get_story(story_id).await {
+        *preview_state.write() = PreviewState::Loaded(story.clone());
+        *full_story.write() = Some(story);
+    }
+}
+
 #[inline_props]
 pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
+    let preview_state = use_shared_state::<PreviewState>(cx).unwrap();
     let StoryItem {
         title,
         url,
@@ -59,6 +79,7 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
         id,
         ..
     } = story;
+    let full_story = use_ref(cx, || None);
 
     let url = url.as_deref().unwrap_or_default();
     let hostname = url
@@ -81,10 +102,16 @@ pub fn StoryListing(cx: Scope, story: StoryItem) -> Element {
         div {
             padding: "0.5rem",
             position: "relative",
+            onmouseenter: move |_event| {
+                resolve_story(full_story.clone(), preview_state.clone(), *id)
+            },
             div {
                 font_size: "1.5rem",
                 a {
                     href: url,
+                    onfocus: move |_event| {
+                        resolve_story(full_story.clone(), preview_state.clone(), *id)
+                    },
                     "{title}"
                 }
                 a {
