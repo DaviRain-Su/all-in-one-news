@@ -1,7 +1,7 @@
 #![allow(clippy::await_holding_lock)]
 
 use all_in_one_news::configuration::get_configuration;
-use all_in_one_news::startup::{Application};
+use all_in_one_news::startup::Application;
 
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -16,11 +16,6 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let configuration = get_configuration()?;
-
-    // let pg_pool = get_connection_pool(&configuration.database);
-    // let pg = Arc::new(pg_pool);
-
-    // process_load_all_rebase_daily(pg).await?;
 
     let service = Application::build(configuration.clone()).await?;
     println!("🌟🌟🌟🌟🌟🌟 Server is running on port 8000 🌟🌟🌟🌟🌟");
