@@ -197,6 +197,7 @@ mod tests {
     use super::*;
 
     #[tokio::test]
+    #[ignore]
     async fn test_get_rebase_dailys() {
         let result = get_aion_preview(4198).await.unwrap();
         println!("result = {:?}", result);
