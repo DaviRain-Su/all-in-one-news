@@ -7,7 +7,6 @@ use crate::routes::query_by_time::list_by_time;
 use crate::routes::query_latest_news::list_latest_news;
 use crate::routes::query_latest_news_id::list_latest_news_ids;
 use aion_parse::rebase::get_total_rebase_daily_episode;
-use aion_types::parse_key::parse_tag;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use anyhow::Result;
 use axum::http::{HeaderValue, Method};
@@ -184,14 +183,13 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyh
     match existing_record {
         Ok(Some(_)) => {
             println!("相同 ID 的记录已存在，不执行插入操作");
-            Err(anyhow::anyhow!("相同 ID 的记录已存在，不执行插入操作"))
+            // Err(anyhow::anyhow!("相同 ID 的记录已存在，不执行插入操作"))
         }
         Ok(None) => {
             // 如果不存在相同 ID 的记录，则执行插入操作
-            let mut result = parse_tag(&rebase_daily.introduce, 3).await?;
-            let mut tags = rebase_daily.tag;
-            tags.append(&mut result);
-            let tags = tags
+            // TODO( tag 可以在后面更新)
+            let tags = rebase_daily
+                .tag
                 .into_iter()
                 .map(|v| v.to_string())
                 .collect::<Vec<String>>();
@@ -217,19 +215,17 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyh
             match result {
                 Ok(_) => {
                     println!("插入成功");
-                    Ok(())
                 }
                 Err(e) => {
                     println!("插入失败: {:?}", e);
-                    Err(anyhow::anyhow!("插入失败: {:?}", e))
                 }
             }
         }
         Err(e) => {
             println!("检查记录时出错: {:?}", e);
-            Err(anyhow::anyhow!("检查记录时出错: {:?}", e))
         }
     }
+    Ok(())
 }
 
 pub async fn process_load_all_rebase_daily(conn_pool: Arc<PgPool>) -> anyhow::Result<()> {
