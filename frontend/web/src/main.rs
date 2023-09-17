@@ -1,10 +1,10 @@
 #![allow(non_snake_case)]
 use dioxus::prelude::*;
 
-pub mod rebase;
+pub mod types;
 use futures::future::join_all;
 
-use rebase::types::ListAllItemsResponse;
+use types::AIonResponse;
 pub static REBASE_BASE__API_URL: &str = "http://127.0.0.1:8000";
 
 fn main() {
@@ -47,8 +47,8 @@ fn Stories(cx: Scope) -> Element {
     }
 }
 
-async fn resolve_story(
-    full_story: UseRef<Option<ListAllItemsResponse>>,
+async fn resolve_aion(
+    full_story: UseRef<Option<AIonResponse>>,
     preview_state: UseSharedState<PreviewState>,
     story_id: i32,
 ) {
@@ -58,16 +58,16 @@ async fn resolve_story(
     }
 
     *preview_state.write() = PreviewState::Loading;
-    if let Ok(story) = get_rebase_daily_preview(story_id).await {
+    if let Ok(story) = get_aion_preview(story_id).await {
         *preview_state.write() = PreviewState::Loaded(story.clone());
         *full_story.write() = Some(story);
     }
 }
 
 #[inline_props]
-fn StoryListing(cx: Scope, story: ListAllItemsResponse) -> Element {
+fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
     let preview_state = use_shared_state::<PreviewState>(cx).unwrap();
-    let ListAllItemsResponse {
+    let AIonResponse {
         title,
         url,
         author: by,
@@ -76,7 +76,7 @@ fn StoryListing(cx: Scope, story: ListAllItemsResponse) -> Element {
         introduce,
         ..
     } = story;
-    let full_story = use_ref(cx, || None);
+    let full_aion = use_ref(cx, || None);
 
     let url = url.as_str();
     let hostname = url
@@ -91,14 +91,14 @@ fn StoryListing(cx: Scope, story: ListAllItemsResponse) -> Element {
             padding: "0.5rem",
             position: "relative",
             onmouseenter: move |_event| {
-                resolve_story(full_story.clone(), preview_state.clone(), *id)
+                resolve_aion(full_aion.clone(), preview_state.clone(), *id)
             },
             div {
                 font_size: "1.5rem",
                 a {
                     href: url,
                     onfocus: move |_event| {
-                        resolve_story(full_story.clone(), preview_state.clone(), *id)
+                        resolve_aion(full_aion.clone(), preview_state.clone(), *id)
                     },
                     "{title}"
                 }
@@ -134,47 +134,14 @@ fn StoryListing(cx: Scope, story: ListAllItemsResponse) -> Element {
 enum PreviewState {
     Unset,
     Loading,
-    Loaded(ListAllItemsResponse),
+    Loaded(AIonResponse),
 }
 
-fn Preview(cx: Scope) -> Element {
-    let preview_state = use_shared_state::<PreviewState>(cx)?;
-
-    match &*preview_state.read() {
-        PreviewState::Unset => render! {
-            "Hover over a story to preview it here"
-        },
-        PreviewState::Loading => render! {
-            "Loading..."
-        },
-        PreviewState::Loaded(story) => {
-            let title = &story.title;
-            let url = &story.url;
-            let text = &story.introduce;
-            render! {
-                div {
-                    padding: "0.5rem",
-                    div {
-                        font_size: "1.5rem",
-                        a {
-                            href: "{url}",
-                            "{title}"
-                        }
-                    }
-                    div {
-                        dangerous_inner_html: "{text}",
-                    }
-                }
-            }
-        }
-    }
-}
-
-pub async fn get_rebase_daily_preview(id: i32) -> Result<ListAllItemsResponse, reqwest::Error> {
+pub async fn get_aion_preview(id: i32) -> Result<AIonResponse, reqwest::Error> {
     let url = format!("{}/by_id?id={}", REBASE_BASE__API_URL, id);
     let result = reqwest::get(&url)
         .await?
-        .json::<Vec<ListAllItemsResponse>>()
+        .json::<Vec<AIonResponse>>()
         .await?;
 
     assert!(result.len() == 1);
@@ -182,25 +149,25 @@ pub async fn get_rebase_daily_preview(id: i32) -> Result<ListAllItemsResponse, r
     Ok(result.first().unwrap().clone())
 }
 
-pub async fn get_rebase_dailys(count: usize) -> Result<Vec<ListAllItemsResponse>, reqwest::Error> {
+pub async fn get_aions(count: usize) -> Result<Vec<AIonResponse>, reqwest::Error> {
     let url = format!("{}/ids", REBASE_BASE__API_URL);
-    let stories_ids = &reqwest::get(&url).await?.json::<Vec<i32>>().await?[..count];
+    let aion_ids = &reqwest::get(&url).await?.json::<Vec<i32>>().await?[..count];
 
-    let story_futures = stories_ids[..usize::min(stories_ids.len(), count)]
+    let aion_futures = aion_ids[..usize::min(aion_ids.len(), count)]
         .iter()
-        .map(|&story_id| get_rebase_daily_preview(story_id));
-    Ok(join_all(story_futures)
+        .map(|&aion_id| get_aion_preview(aion_id));
+    Ok(join_all(aion_futures)
         .await
         .into_iter()
-        .filter_map(|story| story.ok())
+        .filter_map(|aion| aion.ok())
         .collect())
 }
 
-pub async fn get_all_rebase_dailys() -> Result<Vec<ListAllItemsResponse>, reqwest::Error> {
+pub async fn get_all_rebase_dailys() -> Result<Vec<AIonResponse>, reqwest::Error> {
     let url = format!("{}/list_all", REBASE_BASE__API_URL);
     let result = reqwest::get(&url)
         .await?
-        .json::<Vec<ListAllItemsResponse>>()
+        .json::<Vec<AIonResponse>>()
         .await?;
 
     Ok(result)
@@ -212,9 +179,9 @@ mod tests {
 
     #[tokio::test]
     async fn test_get_rebase_dailys() {
-        let result = get_rebase_daily_preview(4198).await.unwrap();
+        let result = get_aion_preview(4198).await.unwrap();
         println!("result = {:?}", result);
-        let result = get_rebase_dailys(10).await.unwrap();
+        let result = get_aions(10).await.unwrap();
         println!("result = {:?}", result);
     }
 }

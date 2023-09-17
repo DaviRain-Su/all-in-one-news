@@ -34,7 +34,7 @@ where
 }
 
 #[derive(Debug, Serialize, Deserialize, Clone, PartialEq)]
-pub struct ListAllItemsResponse {
+pub struct AIonResponse {
     #[serde(
             serialize_with = "serialize_id_as_num" // 序列化时输出为数字
         )]
