@@ -23,10 +23,9 @@ pub fn App(cx: Scope) -> Element {
             flex_direction: "row",
             width: "100%",
             div {
-                width: "50%",
+                width: "100%",
                 Stories {}
             }
-
         }
     })
 }
