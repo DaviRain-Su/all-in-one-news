@@ -4,3 +4,4 @@ pub mod query_by_id;
 pub mod query_by_tag;
 pub mod query_by_time;
 pub mod query_latest_news;
+pub mod query_latest_news_id;
