@@ -1,8 +1,8 @@
 #![allow(clippy::await_holding_lock)]
 
 use all_in_one_news::configuration::get_configuration;
-use all_in_one_news::startup::{get_connection_pool, process_load_all_rebase_daily, Application};
-use std::sync::Arc;
+use all_in_one_news::startup::{Application};
+
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
 #[tokio::main]
