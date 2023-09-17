@@ -5,6 +5,7 @@ use crate::routes::query_by_id::list_by_id;
 use crate::routes::query_by_tag::list_tags;
 use crate::routes::query_by_time::list_by_time;
 use crate::routes::query_latest_news::list_latest_news;
+use crate::routes::query_latest_news_id::list_latest_news_ids;
 use anyhow::Result;
 use axum::http::{HeaderValue, Method};
 use axum::routing::IntoMakeService;
@@ -113,6 +114,7 @@ pub async fn run(
         .route("/time", get(list_by_time)) // todo (query have problem)
         .route("/latest", get(list_latest_news))
         .route("/by_id", get(list_by_id))
+        .route("/ids", get(list_latest_news_ids))
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
@@ -126,7 +128,8 @@ pub async fn run(
             // it is required to add ".allow_headers([http::header::CONTENT_TYPE])"
             // or see this issue https://github.com/tokio-rs/axum/issues/849
             CorsLayer::new()
-                .allow_origin("http://127.0.0.1:8000".parse::<HeaderValue>().unwrap())
+                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+                .allow_origin("http://localhost:8080".parse::<HeaderValue>().unwrap())
                 .allow_methods([Method::GET]),
         )
         .with_state(state);

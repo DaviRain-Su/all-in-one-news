@@ -3,7 +3,7 @@
 use aion_parse::rebase::get_total_rebase_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use all_in_one_news::configuration::get_configuration;
-use all_in_one_news::startup::get_connection_pool;
+// use all_in_one_news::startup::get_connection_pool;
 use all_in_one_news::startup::Application;
 use anyhow::Result;
 use sqlx::PgPool;
@@ -95,8 +95,8 @@ async fn main() -> Result<()> {
 
     let configuration = get_configuration()?;
 
-    let pg_pool = get_connection_pool(&configuration.database);
-    let pg = Arc::new(Mutex::new(pg_pool));
+    // let pg_pool = get_connection_pool(&configuration.database);
+    // let pg = Arc::new(Mutex::new(pg_pool));
 
     // let task = task::spawn(async move {
     //     loop {
@@ -106,7 +106,7 @@ async fn main() -> Result<()> {
     //     }
     // });
     //
-    process_load_all_rebase_daily(pg).await?;
+    // process_load_all_rebase_daily(pg).await?;
 
     let service = Application::build(configuration).await?;
     println!("🌟🌟🌟🌟🌟🌟 Server is running on port 8000 🌟🌟🌟🌟🌟");
