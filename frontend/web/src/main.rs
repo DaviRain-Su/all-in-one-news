@@ -74,6 +74,7 @@ fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
         time,
         id,
         introduce,
+        tag,
         ..
     } = story;
     let full_aion = use_ref(cx, || None);
@@ -124,6 +125,25 @@ fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
                 div {
                     padding_left: "0.5rem",
                     "{introduce}"
+                }
+            }
+            div {
+                padding: "0.5rem",
+                display: "flex", // 行显示
+                color: "red",
+                div {
+                    display: "flex",
+                    flex_direction: "column",
+                    margin: "0.2rem",
+                    "Tag: "
+                }
+                for tg in tag {
+                    div {
+                        display: "flex",
+                        flex_direction: "column",
+                        margin: "0.2rem",
+                        " {tg}"
+                    }
                 }
             }
         }
