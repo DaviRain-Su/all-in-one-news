@@ -37,3 +37,9 @@ pub async fn get_total_rebase_daily_episode() -> anyhow::Result<Vec<RebaseDaliyE
 
     Ok(reuslt_rebase_daily_episode)
 }
+
+/// get total rebase daily ids
+pub async fn get_total_rebase_daily_ids() -> anyhow::Result<Vec<usize>> {
+    let result = get_total_rebase_daily_episode().await?;
+    Ok(result.into_iter().map(|item| item.id).collect())
+}

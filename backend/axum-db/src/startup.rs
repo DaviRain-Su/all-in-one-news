@@ -6,6 +6,9 @@ use crate::routes::query_by_tag::list_tags;
 use crate::routes::query_by_time::list_by_time;
 use crate::routes::query_latest_news::list_latest_news;
 use crate::routes::query_latest_news_id::list_latest_news_ids;
+use aion_parse::rebase::get_total_rebase_daily_episode;
+use aion_types::parse_key::parse_tag;
+use aion_types::rebase::rebase_daily::RebaseDaliy;
 use anyhow::Result;
 use axum::http::{HeaderValue, Method};
 use axum::routing::IntoMakeService;
@@ -15,8 +18,12 @@ use hyper::server::conn::AddrIncoming;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
+use std::sync::Arc;
+use std::time::Duration;
+use tokio::time;
 use tower_http::cors::CorsLayer;
 use tower_http::trace::{DefaultMakeSpan, TraceLayer};
+use uuid::Uuid;
 
 use crate::routes::health_check;
 use crate::routes::index;
@@ -100,7 +107,7 @@ pub async fn run(
     tracing::debug!("listening on {}", listener.local_addr()?);
 
     let state = AppState {
-        database: conn_pool,
+        database: conn_pool.clone(),
         base_url: ApplicationBaseUrl(base_url),
     };
 
@@ -135,6 +142,102 @@ pub async fn run(
         )
         .with_state(state);
 
+    let pg_pool = conn_pool;
+    let pg = Arc::new(pg_pool);
+    let pg_clone = pg.clone();
+
+    // 使用tokio::spawn启动一个异步任务执行定时操作
+    tokio::spawn(async move {
+        // 定时执行任务，例如每小时执行一次
+        let mut interval = time::interval(Duration::from_secs(60 * 60));
+
+        loop {
+            interval.tick().await;
+
+            // 在这里调用您的定时任务函数
+            if let Err(err) = process_load_all_rebase_daily(pg_clone.clone()).await {
+                eprintln!("定时任务执行出错: {:?}", err);
+            }
+        }
+    });
+
     // run it with hyper on localhost:3000
     Ok(axum::Server::from_tcp(listener)?.serve(app.into_make_service()))
+}
+
+async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyhow::Result<()> {
+    let mut connection_pool = conn_pool.acquire().await?;
+
+    println!("定时任务执行中...");
+
+    let key_id = Uuid::new_v4();
+    // 在这里编写你的定时任务逻辑
+    // 执行插入操作
+    // 检查是否已存在相同 ID 的记录
+    let existing_record = sqlx::query!(
+        "SELECT id FROM new_rebase_daily WHERE id = $1",
+        rebase_daily.id as i32
+    )
+    .fetch_optional(connection_pool.as_mut())
+    .await;
+
+    match existing_record {
+        Ok(Some(_)) => {
+            println!("相同 ID 的记录已存在，不执行插入操作");
+            Err(anyhow::anyhow!("相同 ID 的记录已存在，不执行插入操作"))
+        }
+        Ok(None) => {
+            // 如果不存在相同 ID 的记录，则执行插入操作
+            let mut result = parse_tag(&rebase_daily.introduce, 3).await?;
+            let mut tags = rebase_daily.tag;
+            tags.append(&mut result);
+            let tags = tags
+                .into_iter()
+                .map(|v| v.to_string())
+                .collect::<Vec<String>>();
+
+            let result = sqlx::query!(
+                           r#"
+                           INSERT INTO new_rebase_daily (key_id, id, author, episode, introduce, time, title, url, tag)
+                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                           "#,
+                           key_id,
+                           rebase_daily.id as i32,
+                           rebase_daily.author,
+                           rebase_daily.episode,
+                           rebase_daily.introduce,
+                           rebase_daily.time,
+                           rebase_daily.title,
+                           rebase_daily.url,
+                           &tags // 注意此处使用引用来插入 Vec<String>
+                       )
+                       .execute(connection_pool.as_mut())
+                       .await;
+
+            match result {
+                Ok(_) => {
+                    println!("插入成功");
+                    Ok(())
+                }
+                Err(e) => {
+                    println!("插入失败: {:?}", e);
+                    Err(anyhow::anyhow!("插入失败: {:?}", e))
+                }
+            }
+        }
+        Err(e) => {
+            println!("检查记录时出错: {:?}", e);
+            Err(anyhow::anyhow!("检查记录时出错: {:?}", e))
+        }
+    }
+}
+
+pub async fn process_load_all_rebase_daily(conn_pool: Arc<PgPool>) -> anyhow::Result<()> {
+    let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
+    for item in total_rebase_daily_episode {
+        let conn_pool = conn_pool.clone();
+        task_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
+    }
+
+    Ok(())
 }

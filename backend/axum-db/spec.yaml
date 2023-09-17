@@ -1,5 +1,5 @@
 #! spec.yaml
-name: zero2prod
+name: aion
 # Check https://www.digitalocean.com/docs/app-platform/#regional-availability
 # for a list of all the available options.
 # You can get region slugs from
@@ -8,7 +8,7 @@ name: zero2prod
 # `fra` stands for Frankfurt (Germany - EU)
 region: fra
 services:
-  - name: zero2prod
+  - name: aion
     # Relative to the repository root
     dockerfile_path: Dockerfile
     source_dir: .
@@ -21,7 +21,7 @@ services:
       deploy_on_push: true
       # !!! Fill in with your details
       # e.g. LukeMathWalker/zero-to-production
-      repo: DaviRain-Su/zero2prod
+      repo: DaviRain-Su/all-in-one-news
     # Active probe used by DigitalOcean's to ensure our application is healthy
     health_check:
       # The path to our health check endpoint!

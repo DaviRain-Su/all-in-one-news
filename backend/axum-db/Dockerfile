@@ -14,7 +14,7 @@ RUN cargo chef cook --release --recipe-path recipe.json
 COPY . .
 ENV SQLX_OFFLINE true
 # Build our project
-RUN cargo build --release --bin zero2prod
+RUN cargo build --release --bin aion
 
 
 # runtime stage
@@ -30,8 +30,8 @@ RUN apt-get update -y \
     && apt-get autoremove -y \
     && apt-get clean -y \
     && rm -rf /var/lib/apt/lists/*
-COPY --from=builder /app/target/release/zero2prod zero2prod
+COPY --from=builder /app/target/release/aion aion
 COPY configuration configuration
 ENV APP_ENVIRONMENT production
-# ENTRYPOINT ["./zero2prod"]
-CMD ["./zero2prod"]
+# ENTRYPOINT ["./aion"]
+CMD ["./aion"]

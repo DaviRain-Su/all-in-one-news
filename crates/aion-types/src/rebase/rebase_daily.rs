@@ -28,7 +28,7 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
             time,
             title: episode.attributes.title,
             url: episode.attributes.url,
-            tag: vec![Tag::Rebase, Tag::Daily],
+            tag: vec![Tag::Rebase],
         })
     }
 }
