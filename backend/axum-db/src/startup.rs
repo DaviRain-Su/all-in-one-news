@@ -1,5 +1,5 @@
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::routes::query_all::list_all_items;
+use crate::routes::query_all::{list_all, list_all_items};
 use crate::routes::query_all_author::list_authors;
 use crate::routes::query_by_id::list_by_id;
 use crate::routes::query_by_tag::list_tags;
@@ -109,6 +109,7 @@ pub async fn run(
         .route("/", get(index))
         .route("/health_check", get(health_check))
         .route("/list", get(list_all_items))
+        .route("/list_all", get(list_all))
         .route("/authors", get(list_authors))
         .route("/tags", get(list_tags))
         .route("/time", get(list_by_time)) // todo (query have problem)

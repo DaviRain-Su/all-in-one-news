@@ -26,16 +26,14 @@ pub fn App(cx: Scope) -> Element {
                 width: "50%",
                 Stories {}
             }
-            div {
-                width: "50%",
-                Preview {}
-            }
+
         }
     })
 }
 
 fn Stories(cx: Scope) -> Element {
-    let story = use_future(cx, (), |_| get_rebase_dailys(10));
+    // let story = use_future(cx, (), |_| get_rebase_dailys(10));
+    let story = use_future(cx, (), |_| get_all_rebase_dailys());
 
     match story.value() {
         Some(Ok(list)) => render! {
@@ -76,6 +74,7 @@ fn StoryListing(cx: Scope, story: ListAllItemsResponse) -> Element {
         author: by,
         time,
         id,
+        introduce,
         ..
     } = story;
     let full_story = use_ref(cx, || None);
@@ -123,7 +122,10 @@ fn StoryListing(cx: Scope, story: ListAllItemsResponse) -> Element {
                     padding_left: "0.5rem",
                     "{time}"
                 }
-
+                div {
+                    padding_left: "0.5rem",
+                    "{introduce}"
+                }
             }
         }
     })
@@ -193,6 +195,16 @@ pub async fn get_rebase_dailys(count: usize) -> Result<Vec<ListAllItemsResponse>
         .into_iter()
         .filter_map(|story| story.ok())
         .collect())
+}
+
+pub async fn get_all_rebase_dailys() -> Result<Vec<ListAllItemsResponse>, reqwest::Error> {
+    let url = format!("{}/list_all", REBASE_BASE__API_URL);
+    let result = reqwest::get(&url)
+        .await?
+        .json::<Vec<ListAllItemsResponse>>()
+        .await?;
+
+    Ok(result)
 }
 
 #[cfg(test)]

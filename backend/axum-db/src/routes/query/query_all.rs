@@ -39,3 +39,23 @@ pub async fn list_all_items(
         Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
     }
 }
+
+pub async fn list_all(DatabaseConnection(mut conn_pool): DatabaseConnection) -> impl IntoResponse {
+    let connection_pool = conn_pool
+        .acquire()
+        .await
+        .expect("Failed to acquire connection");
+
+    // Execute the database query
+    let result = query_as!(
+        ListAllItemsResponse,
+        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rebase_daily",
+    )
+    .fetch_all(connection_pool.as_mut())
+    .await;
+
+    match result {
+        Ok(items) => Ok(Json(items)),
+        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+    }
+}
