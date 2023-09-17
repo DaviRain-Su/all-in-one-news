@@ -17,10 +17,10 @@ async fn main() -> anyhow::Result<()> {
 
     let configuration = get_configuration()?;
 
-    let pg_pool = get_connection_pool(&configuration.database);
-    let pg = Arc::new(pg_pool);
+    // let pg_pool = get_connection_pool(&configuration.database);
+    // let pg = Arc::new(pg_pool);
 
-    process_load_all_rebase_daily(pg).await?;
+    // process_load_all_rebase_daily(pg).await?;
 
     let service = Application::build(configuration.clone()).await?;
     println!("🌟🌟🌟🌟🌟🌟 Server is running on port 8000 🌟🌟🌟🌟🌟");
