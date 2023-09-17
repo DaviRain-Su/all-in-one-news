@@ -104,7 +104,7 @@ fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
                 }
                 a {
                     color: "gray",
-                    href: "https://news.ycombinator.com/from?site={hostname}",
+                    href: url,
                     text_decoration: "none",
                     " ({hostname})"
                 }
