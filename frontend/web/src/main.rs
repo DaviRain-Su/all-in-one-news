@@ -40,13 +40,16 @@ fn Stories(cx: Scope) -> Element {
     let story = use_future(cx, (), |_| get_latest_new());
 
     match story.value() {
-        Some(Ok(list)) => render! {
-            div {
-                for story in list {
-                    StoryListing { rebase_list: story.clone() }
+        Some(Ok(list)) => {
+            dbg!(list);
+            render! {
+                div {
+                    for story in list {
+                        StoryListing { rebase_list: story.clone() }
+                    }
                 }
             }
-        },
+        }
         Some(Err(err)) => render! {"An error occurred while fetching stories {err}"},
         None => render! {"Loading items"},
     }
