@@ -116,15 +116,15 @@ fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
                 color: "gray",
                 div {
                     padding_left: "0.5rem",
+                    "{introduce}"
+                }
+                div {
+                    padding_left: "0.5rem",
                     "by {by}"
                 }
                 div {
                     padding_left: "0.5rem",
                     "{time}"
-                }
-                div {
-                    padding_left: "0.5rem",
-                    "{introduce}"
                 }
             }
             div {
