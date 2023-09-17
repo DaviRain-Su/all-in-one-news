@@ -49,7 +49,7 @@ pub async fn list_all(DatabaseConnection(mut conn_pool): DatabaseConnection) -> 
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rebase_daily",
+        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC",
     )
     .fetch_all(connection_pool.as_mut())
     .await;

@@ -24,21 +24,20 @@ pub fn App(cx: Scope) -> Element {
             width: "100%",
             div {
                 width: "100%",
-                Stories {}
+                Aions {}
             }
         }
     })
 }
 
-fn Stories(cx: Scope) -> Element {
-    // let story = use_future(cx, (), |_| get_rebase_dailys(10));
-    let story = use_future(cx, (), |_| get_all_rebase_dailys());
+fn Aions(cx: Scope) -> Element {
+    let aion = use_future(cx, (), |_| get_all_aions());
 
-    match story.value() {
+    match aion.value() {
         Some(Ok(list)) => render! {
             div {
-                for story in list {
-                    StoryListing { story: story.clone() }
+                for item in list {
+                    AionListing { aion: item.clone() }
                 }
             }
         },
@@ -65,7 +64,7 @@ async fn resolve_aion(
 }
 
 #[inline_props]
-fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
+fn AionListing(cx: Scope, aion: AIonResponse) -> Element {
     let preview_state = use_shared_state::<PreviewState>(cx).unwrap();
     let AIonResponse {
         title,
@@ -76,7 +75,7 @@ fn StoryListing(cx: Scope, story: AIonResponse) -> Element {
         introduce,
         tag,
         ..
-    } = story;
+    } = aion;
     let full_aion = use_ref(cx, || None);
 
     let url = url.as_str();
@@ -183,7 +182,7 @@ pub async fn get_aions(count: usize) -> Result<Vec<AIonResponse>, reqwest::Error
         .collect())
 }
 
-pub async fn get_all_rebase_dailys() -> Result<Vec<AIonResponse>, reqwest::Error> {
+pub async fn get_all_aions() -> Result<Vec<AIonResponse>, reqwest::Error> {
     let url = format!("{}/list_all", REBASE_BASE__API_URL);
     let result = reqwest::get(&url)
         .await?
