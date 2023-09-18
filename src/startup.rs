@@ -164,12 +164,37 @@ pub async fn run(
     Ok(axum::Server::from_tcp(listener)?.serve(app.into_make_service()))
 }
 
+async fn create_table(pool: &PgPool) -> anyhow::Result<()> {
+    // SQL 创建表格的语句
+    let create_table_query = r#"
+        CREATE TABLE IF NOT EXISTS new_rebase_daily (
+            key_id UUID PRIMARY KEY NOT NULL,
+            id INTEGER NOT NULL,
+            author TEXT NOT NULL,
+            episode TEXT NOT NULL,
+            introduce TEXT NOT NULL,
+            time TIMESTAMPTZ NOT NULL,
+            title TEXT NOT NULL,
+            url TEXT NOT NULL,
+            tag TEXT[] NOT NULL
+        )
+    "#;
+
+    // 执行创建表格的查询
+    sqlx::query(create_table_query).execute(pool).await?;
+
+    Ok(())
+}
+
 async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyhow::Result<()> {
     let mut connection_pool = conn_pool.acquire().await?;
 
     println!("定时任务执行中...");
 
     let key_id = Uuid::new_v4();
+
+    create_table(&conn_pool).await?;
+
     // 在这里编写你的定时任务逻辑
     // 执行插入操作
     // 检查是否已存在相同 ID 的记录
