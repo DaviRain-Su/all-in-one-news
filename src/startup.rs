@@ -135,8 +135,9 @@ pub async fn run(
             // it is required to add ".allow_headers([http::header::CONTENT_TYPE])"
             // or see this issue https://github.com/tokio-rs/axum/issues/849
             CorsLayer::new()
-                .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-                .allow_origin("http://localhost:8080".parse::<HeaderValue>().unwrap())
+                // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
+                // .allow_origin("http://localhost:8080".parse::<HeaderValue>().unwrap())
+                .allow_origin(HeaderValue::from_static("*"))
                 .allow_methods([Method::GET]),
         )
         .with_state(state);
