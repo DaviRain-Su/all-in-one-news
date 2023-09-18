@@ -164,7 +164,7 @@ jobs:
         run: |
             SKIP_DOCKER=true ./scripts/init_db.sh
       - name: Generate code coverage
-        run: cargo install cargo-tarpaulin && cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out Xml
+        run: cargo install cargo-tarpaulin && cargo tarpaulin --verbose --all-features --workspace --timeout 120 --out xml
       - name: Upload to codecov.io
         uses: codecov/codecov-action@v3
         with:
