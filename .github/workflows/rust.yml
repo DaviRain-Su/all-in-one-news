@@ -128,6 +128,8 @@ jobs:
       - name: Migrate database
         run: |
             SKIP_DOCKER=true ./scripts/init_db.sh
+      - name: Check .sqlx update
+        run: cargo sqlx prepare -- --check
       - name: Linting
         run: cargo clippy -- -D warnings
 
