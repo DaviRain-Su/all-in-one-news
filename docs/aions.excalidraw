@@ -1,0 +1,874 @@
+{
+  "type": "excalidraw",
+  "version": 2,
+  "source": "https://excalidraw.com",
+  "elements": [
+    {
+      "id": "BXXFGUL3BvPueSlnA0EvU",
+      "type": "rectangle",
+      "x": -200.71753775028992,
+      "y": 206.23060343578504,
+      "width": 119.11718749999999,
+      "height": 80.96093750000001,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "seed": 2074862557,
+      "version": 1000,
+      "versionNonce": 2144277853,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "type": "text",
+          "id": "TyFgsQpCaYYlbe8D9YWpi"
+        },
+        {
+          "id": "Gg5_ovDGo07T4dSM7zPQh",
+          "type": "arrow"
+        },
+        {
+          "id": "Ebr5x1k4HPJAunxeysTGl",
+          "type": "arrow"
+        },
+        {
+          "id": "xYr6_fV0m6qFOYjX32hcu",
+          "type": "arrow"
+        },
+        {
+          "id": "lP03OtUtcJiX_0J5912ex",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "TyFgsQpCaYYlbe8D9YWpi",
+      "type": "text",
+      "x": -163.49892507939148,
+      "y": 234.21107218578504,
+      "width": 44.679962158203125,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 130875165,
+      "version": 247,
+      "versionNonce": 2019375859,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "User",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "center",
+      "verticalAlign": "middle",
+      "baseline": 18,
+      "containerId": "BXXFGUL3BvPueSlnA0EvU",
+      "originalText": "User",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "vRWVKhuOuodyzNRO6nrzm",
+      "type": "rectangle",
+      "x": -206.56910025028992,
+      "y": 377.94154093578504,
+      "width": 366.78125,
+      "height": 393.9140625,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "seed": 1345444765,
+      "version": 338,
+      "versionNonce": 861823421,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "Gg5_ovDGo07T4dSM7zPQh",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "ulkvhccXGE3eKcB3J7UuO",
+      "type": "text",
+      "x": -151.43628775028992,
+      "y": 421.25404093578504,
+      "width": 643.5795288085938,
+      "height": 275,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 1075750237,
+      "version": 509,
+      "versionNonce": 25126035,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "1. Pubkey for User wallet\n2. Source Message\n    - author just pubkey\n    - content of just summary get from url by ChatGpt summary\n    - timestamp by use upload\n    - url for this message\n    - bool setting this can public \n    - this message commient for this platform\n    - this message tags by ChatGpt summary\n    - pageRank meybe\n3. 声誉积分",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 268,
+      "containerId": null,
+      "originalText": "1. Pubkey for User wallet\n2. Source Message\n    - author just pubkey\n    - content of just summary get from url by ChatGpt summary\n    - timestamp by use upload\n    - url for this message\n    - bool setting this can public \n    - this message commient for this platform\n    - this message tags by ChatGpt summary\n    - pageRank meybe\n3. 声誉积分",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "Gg5_ovDGo07T4dSM7zPQh",
+      "type": "arrow",
+      "x": -113.79803995146034,
+      "y": 370.855603435785,
+      "width": 26.660958175507062,
+      "height": 80.31249999999994,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 1884851965,
+      "version": 679,
+      "versionNonce": 1678058013,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -26.660958175507062,
+          -80.31249999999994
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "vRWVKhuOuodyzNRO6nrzm",
+        "focus": -0.0919888607441933,
+        "gap": 7.085937500000057
+      },
+      "endBinding": {
+        "elementId": "BXXFGUL3BvPueSlnA0EvU",
+        "focus": 0.18974507609098565,
+        "gap": 3.3515625
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "sEuWobVJaueDDMzEA9SNv",
+      "type": "rectangle",
+      "x": 384.2316809997101,
+      "y": 229.75013468578504,
+      "width": 254.94140625,
+      "height": 156.5546875,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "seed": 896440307,
+      "version": 305,
+      "versionNonce": 602626611,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "Ebr5x1k4HPJAunxeysTGl",
+          "type": "arrow"
+        },
+        {
+          "id": "cY6ti9Vwqrcid6fXqAk34",
+          "type": "arrow"
+        },
+        {
+          "id": "7NLeH5Ie79kTn5wSuXcJG",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "vU7KU5mM7VfkOVwhHzWK0",
+      "type": "text",
+      "x": 436.2941809997101,
+      "y": 251.96888468578504,
+      "width": 152.03988647460938,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 1266463187,
+      "version": 177,
+      "versionNonce": 1723127421,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "Solana Program",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 18,
+      "containerId": null,
+      "originalText": "Solana Program",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "JzxNYezQ1-2Bd4xQVT6iQ",
+      "type": "text",
+      "x": 409.8176184997101,
+      "y": 283.29700968578504,
+      "width": 1376.4398193359375,
+      "height": 325,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 157435155,
+      "version": 1858,
+      "versionNonce": 747084755,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "1. 用户注册平台，注册一个用户就产生这个用户的Merkelt Tree\n2. 生成的用户账户包含的内容\n    - 声誉积分\n    - Merkelt Tree root\n    - count 计数，这个账户已经发送了多少的Message\n3. 对发布内容作恶的处理\n    - 新钱包注册的，需要成有一段时间（也被成为冷静期时间）才可以设置内容到public\n        - 如果本来是一个一只活跃的账户则不限制\n    - 对发布的内容需要监控，监控方式是通过chatgpt设置的promt来设置的\n        - prompt 限制的有prompt黄赌毒，或者别的非法内容，如果发现有这类内容提交，每个账户有2次机会 第三次限制账户使用\n    - pagerank 的算法处理，根据pagerank的得分结果，对每个人的声誉积分做变更\n4 当用户变更一个消息的时候，需要做签名检查，使用这个账户的私钥签名数据和indexer中的内容做对比来决定这个用户是否有权利来更新indexer中的内容\n",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 318,
+      "containerId": null,
+      "originalText": "1. 用户注册平台，注册一个用户就产生这个用户的Merkelt Tree\n2. 生成的用户账户包含的内容\n    - 声誉积分\n    - Merkelt Tree root\n    - count 计数，这个账户已经发送了多少的Message\n3. 对发布内容作恶的处理\n    - 新钱包注册的，需要成有一段时间（也被成为冷静期时间）才可以设置内容到public\n        - 如果本来是一个一只活跃的账户则不限制\n    - 对发布的内容需要监控，监控方式是通过chatgpt设置的promt来设置的\n        - prompt 限制的有prompt黄赌毒，或者别的非法内容，如果发现有这类内容提交，每个账户有2次机会 第三次限制账户使用\n    - pagerank 的算法处理，根据pagerank的得分结果，对每个人的声誉积分做变更\n4 当用户变更一个消息的时候，需要做签名检查，使用这个账户的私钥签名数据和indexer中的内容做对比来决定这个用户是否有权利来更新indexer中的内容\n",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "Ebr5x1k4HPJAunxeysTGl",
+      "type": "arrow",
+      "x": -67.97144400028992,
+      "y": 245.49622843578504,
+      "width": 437.8359375,
+      "height": 37.98828125,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 1745438429,
+      "version": 335,
+      "versionNonce": 1982791389,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          437.8359375,
+          37.98828125
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "BXXFGUL3BvPueSlnA0EvU",
+        "focus": -0.1657217286013491,
+        "gap": 13.628906250000007
+      },
+      "endBinding": {
+        "elementId": "sEuWobVJaueDDMzEA9SNv",
+        "focus": 0.13697078711032554,
+        "gap": 14.3671875
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "gB_UWgd7KxvfREIf71Krf",
+      "type": "rectangle",
+      "x": 552.2316809997101,
+      "y": 715.74842570141,
+      "width": 388.40234375,
+      "height": 241.88671875,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "seed": 736699763,
+      "version": 416,
+      "versionNonce": 124430707,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "cY6ti9Vwqrcid6fXqAk34",
+          "type": "arrow"
+        },
+        {
+          "id": "xYr6_fV0m6qFOYjX32hcu",
+          "type": "arrow"
+        },
+        {
+          "id": "bTwOhEYH_dL3rGHG0QOGM",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "zHytYegvewBFNdGUA7bvB",
+      "type": "text",
+      "x": 626.6887122497101,
+      "y": 804.04139445141,
+      "width": 240,
+      "height": 125,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 1762869907,
+      "version": 233,
+      "versionNonce": 2030377789,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "链下indexer \n\n目标是为了方便检索内容，\n根据用户提交的消息\n",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 118,
+      "containerId": null,
+      "originalText": "链下indexer \n\n目标是为了方便检索内容，\n根据用户提交的消息\n",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "LXOptfecJ0jWs7DZ9PdJR",
+      "type": "text",
+      "x": 595.9426184997101,
+      "y": 1007.6480946624815,
+      "width": 1101.8798828125,
+      "height": 150,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 2104269491,
+      "version": 696,
+      "versionNonce": 1507525395,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "对于indexer，也希望是可以提供多个indexer来提供服务的。那这个就是分布式多机的了。\n可以给予提供indexer服务的提供者给予token激励\n对于indexer中的内容，也希望可以使用分布式存储服务进行备份\n还可以通过indexer中的数据内容做数据上的内容分析(需要注意的是，如果要是使用这个数据来做内容分析的话可能需要付费)\n\n",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 143,
+      "containerId": null,
+      "originalText": "对于indexer，也希望是可以提供多个indexer来提供服务的。那这个就是分布式多机的了。\n可以给予提供indexer服务的提供者给予token激励\n对于indexer中的内容，也希望可以使用分布式存储服务进行备份\n还可以通过indexer中的数据内容做数据上的内容分析(需要注意的是，如果要是使用这个数据来做内容分析的话可能需要付费)\n\n",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "cY6ti9Vwqrcid6fXqAk34",
+      "type": "arrow",
+      "x": 544.8098059997101,
+      "y": 413.87611124828504,
+      "width": 72.578125,
+      "height": 299.4140625,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 1823631027,
+      "version": 309,
+      "versionNonce": 127445917,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          72.578125,
+          299.4140625
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "sEuWobVJaueDDMzEA9SNv",
+        "focus": -0.050869946322438186,
+        "gap": 27.5712890625
+      },
+      "endBinding": {
+        "elementId": "gB_UWgd7KxvfREIf71Krf",
+        "focus": -0.4435094663115593,
+        "gap": 2.458251953125
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "xYr6_fV0m6qFOYjX32hcu",
+      "type": "arrow",
+      "x": -74.25660025028992,
+      "y": 272.20423624828504,
+      "width": 602.4375,
+      "height": 418.3125,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 353804861,
+      "version": 355,
+      "versionNonce": 1548691635,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          602.4375,
+          418.3125
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "BXXFGUL3BvPueSlnA0EvU",
+        "focus": -0.25614154149008195,
+        "gap": 7.343750000000007
+      },
+      "endBinding": {
+        "elementId": "gB_UWgd7KxvfREIf71Krf",
+        "focus": -0.02100090666546638,
+        "gap": 25.231689453125
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "YVrA7DU1xQ7pgcY5aOQps",
+      "type": "rectangle",
+      "x": 344.3410559997101,
+      "y": -230.14024617358996,
+      "width": 471.07421875,
+      "height": 350.8984375,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 3
+      },
+      "seed": 217261715,
+      "version": 148,
+      "versionNonce": 840642557,
+      "isDeleted": false,
+      "boundElements": [
+        {
+          "id": "bTwOhEYH_dL3rGHG0QOGM",
+          "type": "arrow"
+        },
+        {
+          "id": "7NLeH5Ie79kTn5wSuXcJG",
+          "type": "arrow"
+        },
+        {
+          "id": "lP03OtUtcJiX_0J5912ex",
+          "type": "arrow"
+        }
+      ],
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false
+    },
+    {
+      "id": "CUYzcUtzsijtaztQWzXah",
+      "type": "text",
+      "x": 532.6418372497101,
+      "y": -182.97227742358996,
+      "width": 80,
+      "height": 25,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 589367507,
+      "version": 155,
+      "versionNonce": 1953339987,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "text": "前端显示",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 18,
+      "containerId": null,
+      "originalText": "前端显示",
+      "lineHeight": 1.25
+    },
+    {
+      "id": "bTwOhEYH_dL3rGHG0QOGM",
+      "type": "arrow",
+      "x": 725.6652747497101,
+      "y": 134.13270304516004,
+      "width": 21.5,
+      "height": 551.109375,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 574861341,
+      "version": 329,
+      "versionNonce": 109979741,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          21.5,
+          551.109375
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "YVrA7DU1xQ7pgcY5aOQps",
+        "focus": -0.5710853374090645,
+        "gap": 13.37451171875
+      },
+      "endBinding": {
+        "elementId": "gB_UWgd7KxvfREIf71Krf",
+        "focus": 0.03338442481413341,
+        "gap": 30.50634765625
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "7NLeH5Ie79kTn5wSuXcJG",
+      "type": "arrow",
+      "x": 528.5988684997101,
+      "y": 148.25208781078504,
+      "width": 4.5390625,
+      "height": 70.8046875,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 1986606141,
+      "version": 271,
+      "versionNonce": 252499955,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          -4.5390625,
+          70.8046875
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "YVrA7DU1xQ7pgcY5aOQps",
+        "focus": 0.155071514866586,
+        "gap": 27.493896484375
+      },
+      "endBinding": {
+        "elementId": "sEuWobVJaueDDMzEA9SNv",
+        "focus": 0.050221553895722054,
+        "gap": 10.693359375
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "lP03OtUtcJiX_0J5912ex",
+      "type": "arrow",
+      "x": -81.69410025028992,
+      "y": 197.58411906078504,
+      "width": 398.17578125,
+      "height": 187.02734375,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": {
+        "type": 2
+      },
+      "seed": 375452691,
+      "version": 330,
+      "versionNonce": 1455625405,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695093994260,
+      "link": null,
+      "locked": false,
+      "points": [
+        [
+          0,
+          0
+        ],
+        [
+          398.17578125,
+          -187.02734375
+        ]
+      ],
+      "lastCommittedPoint": null,
+      "startBinding": {
+        "elementId": "BXXFGUL3BvPueSlnA0EvU",
+        "focus": -0.30962610310686656,
+        "gap": 8.646484375
+      },
+      "endBinding": {
+        "elementId": "YVrA7DU1xQ7pgcY5aOQps",
+        "focus": 0.20438891614477198,
+        "gap": 27.859375
+      },
+      "startArrowhead": null,
+      "endArrowhead": "arrow"
+    },
+    {
+      "id": "7qpeoFboRTnDz0l0GWPIx",
+      "type": "text",
+      "x": -711.7911402652668,
+      "y": 903.1775495839099,
+      "width": 1388.2198486328125,
+      "height": 100,
+      "angle": 0,
+      "strokeColor": "#1e1e1e",
+      "backgroundColor": "transparent",
+      "fillStyle": "hachure",
+      "strokeWidth": 1,
+      "strokeStyle": "solid",
+      "roughness": 1,
+      "opacity": 100,
+      "groupIds": [],
+      "frameId": null,
+      "roundness": null,
+      "seed": 1757989245,
+      "version": 1095,
+      "versionNonce": 1749429757,
+      "isDeleted": false,
+      "boundElements": null,
+      "updated": 1695094582767,
+      "link": null,
+      "locked": false,
+      "text": "1. 对于数据源的思考，或许希望全部都能转换成rss的格式\n2. 数据来源可以是twitter中的比较不错的人的发言，微信公众号里面的内容，或者一些独立的博客，\n3. 需要注意的是这个主要是想做内容上的沉淀，所以需要后面对内容做筛选，也就是在laod到ipfs上备份的时候，可能需要DAO委员会，对内容筛选然后备份\n4. 后面对于精选部分的内容，可以提供订阅服务，推送给用户。 然后产生的收益给到这些内容提供的人。由此形成一个闭环",
+      "fontSize": 20,
+      "fontFamily": 1,
+      "textAlign": "left",
+      "verticalAlign": "top",
+      "baseline": 93,
+      "containerId": null,
+      "originalText": "1. 对于数据源的思考，或许希望全部都能转换成rss的格式\n2. 数据来源可以是twitter中的比较不错的人的发言，微信公众号里面的内容，或者一些独立的博客，\n3. 需要注意的是这个主要是想做内容上的沉淀，所以需要后面对内容做筛选，也就是在laod到ipfs上备份的时候，可能需要DAO委员会，对内容筛选然后备份\n4. 后面对于精选部分的内容，可以提供订阅服务，推送给用户。 然后产生的收益给到这些内容提供的人。由此形成一个闭环",
+      "lineHeight": 1.25
+    }
+  ],
+  "appState": {
+    "gridSize": null,
+    "viewBackgroundColor": "#fffce8"
+  },
+  "files": {}
+}
