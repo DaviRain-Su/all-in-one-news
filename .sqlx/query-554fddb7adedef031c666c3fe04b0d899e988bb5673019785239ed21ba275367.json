@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rebase_daily OFFSET $1 LIMIT $2",
+  "query": "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily WHERE hash = $1",
   "describe": {
     "columns": [
       {
@@ -10,44 +10,48 @@
       },
       {
         "ordinal": 1,
-        "name": "author",
+        "name": "hash",
         "type_info": "Text"
       },
       {
         "ordinal": 2,
-        "name": "episode",
+        "name": "author",
         "type_info": "Text"
       },
       {
         "ordinal": 3,
-        "name": "introduce",
+        "name": "episode",
         "type_info": "Text"
       },
       {
         "ordinal": 4,
+        "name": "introduce",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
         "name": "time",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "title",
         "type_info": "Text"
       },
       {
-        "ordinal": 6,
+        "ordinal": 7,
         "name": "url",
         "type_info": "Text"
       },
       {
-        "ordinal": 7,
+        "ordinal": 8,
         "name": "tag",
         "type_info": "TextArray"
       }
     ],
     "parameters": {
       "Left": [
-        "Int8",
-        "Int8"
+        "Text"
       ]
     },
     "nullable": [
@@ -58,8 +62,9 @@
       false,
       false,
       false,
+      false,
       false
     ]
   },
-  "hash": "d0c2099217828675d245daaef17412f7527b39ec7bffbaa5713249ca8e255f7f"
+  "hash": "554fddb7adedef031c666c3fe04b0d899e988bb5673019785239ed21ba275367"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily ORDER BY time DESC",
+  "query": "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily WHERE id = $1",
   "describe": {
     "columns": [
       {
@@ -10,44 +10,52 @@
       },
       {
         "ordinal": 1,
-        "name": "author",
+        "name": "hash",
         "type_info": "Text"
       },
       {
         "ordinal": 2,
-        "name": "episode",
+        "name": "author",
         "type_info": "Text"
       },
       {
         "ordinal": 3,
-        "name": "introduce",
+        "name": "episode",
         "type_info": "Text"
       },
       {
         "ordinal": 4,
+        "name": "introduce",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 5,
         "name": "time",
         "type_info": "Timestamptz"
       },
       {
-        "ordinal": 5,
+        "ordinal": 6,
         "name": "title",
         "type_info": "Text"
       },
       {
-        "ordinal": 6,
+        "ordinal": 7,
         "name": "url",
         "type_info": "Text"
       },
       {
-        "ordinal": 7,
+        "ordinal": 8,
         "name": "tag",
         "type_info": "TextArray"
       }
     ],
     "parameters": {
-      "Left": []
+      "Left": [
+        "Int4"
+      ]
     },
     "nullable": [
+      false,
       false,
       false,
       false,
@@ -58,5 +66,5 @@
       false
     ]
   },
-  "hash": "dca8c13fc92f380dd4fd9cace4b1db33d20900002e619c71ec003640a0feae5f"
+  "hash": "9f07427d01a2ef5e2644edc961443b9938a5cdecd787c968d860766085855fe2"
 }
