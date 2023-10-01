@@ -1,5 +1,5 @@
 use crate::tag::Tag;
-use aion_parse::rebase::types::RebaseDaliyEpisode;
+use aion_parse::{rebase::types::RebaseDaliyEpisode, rustcc::types::message::Message};
 use sha256::digest;
 
 #[derive(Debug)]
@@ -20,7 +20,10 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
 
     fn try_from(episode: RebaseDaliyEpisode) -> anyhow::Result<Self> {
         let raw_time = format!("{}T00:00:00.000Z", episode.attributes.time);
-        let time = raw_time.parse::<chrono::DateTime<chrono::Utc>>().unwrap();
+        let now_time = chrono::Utc::now();
+        let time = raw_time
+            .parse::<chrono::DateTime<chrono::Utc>>()
+            .unwrap_or(now_time);
 
         //sha256 digest String
         let mut input = String::new();
@@ -39,6 +42,40 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
             title: episode.attributes.title,
             url: episode.attributes.url,
             tag: vec![Tag::Rebase],
+        })
+    }
+}
+
+impl TryFrom<Message> for RebaseDaliy {
+    type Error = anyhow::Error;
+
+    fn try_from(value: Message) -> Result<Self, Self::Error> {
+        let raw_time = format!("{}T00:00:00.000Z", value.time);
+        let now_time = chrono::Utc::now();
+        let time = raw_time
+            .parse::<chrono::DateTime<chrono::Utc>>()
+            .unwrap_or(now_time);
+
+        //sha256 digest String
+        let mut input = String::new();
+        input.push_str(&value.title);
+        input.push_str(&value.time);
+        input.push_str(&value.author);
+        let hash = digest(input);
+
+        let content = value.contents.into_iter().collect::<String>();
+        let content = content.replace('\n', " ");
+
+        Ok(Self {
+            id: 0,
+            hash,
+            author: value.author,
+            episode: String::from("rustcc"),
+            introduce: content,
+            time,
+            title: value.title,
+            url: value.link,
+            tag: vec![Tag::Rust],
         })
     }
 }

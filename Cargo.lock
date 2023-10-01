@@ -108,6 +108,7 @@ name = "aion-parse"
 version = "0.1.0"
 dependencies = [
  "anyhow",
+ "chrono",
  "html5ever",
  "num_cpus",
  "reqwest",

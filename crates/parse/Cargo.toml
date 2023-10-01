@@ -17,7 +17,7 @@ html5ever = "0.26"
 select = "0.6"
 retry = "2.0.0"
 tokio = { version = "1.32.0", features = ["full"] }
-
+chrono = { version = "0.4.30", features = ["rkyv"] }
 
 [dev-dependencies]
 tokio = { version = "1.32.0", features = ["full"] }

@@ -35,7 +35,7 @@ pub fn convert_to_json_value(messages: &Messages) -> Vec<Value> {
                 {
                     "type": "text",
                     "text": {
-                        "content": message.time
+                        "content": message.time.to_string()
                     }
                 }
             ]

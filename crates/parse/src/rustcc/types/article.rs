@@ -40,11 +40,19 @@ impl Article {
 
         let author = content1[0].to_string();
 
-        let time = content1[1]
+        let raw_time = content1[1]
             .to_string()
             .trim_start_matches("发表于")
             .trim()
-            .to_string();
+            .to_string()
+            .split_whitespace()
+            .map(|v| v.to_string())
+            .collect::<Vec<String>>();
+
+        assert!(raw_time.len() == 2);
+
+        let raw_time = format!("{}T00:00:00.000Z", raw_time[0]);
+        let time = raw_time.parse::<chrono::DateTime<chrono::Utc>>()?;
 
         let document = Html::parse_document(&body);
         let selector = Selector::parse("div.detail-body").unwrap();
@@ -56,7 +64,7 @@ impl Article {
 
             let mut message = Message {
                 author: author.clone(),
-                time: time.clone(),
+                time: time.to_string(),
                 ..Message::default()
             };
             for title_and_content in title_and_contents {
@@ -66,7 +74,7 @@ impl Article {
                     messages.push(message);
                     message = Message {
                         author: author.clone(),
-                        time: time.clone(),
+                        time: time.to_string(),
                         ..Message::default()
                     };
                     message.title = title;
@@ -93,7 +101,8 @@ impl Article {
                         let link_content = element.value().attr("href").unwrap();
                         let link_content = link_content.replace('\n', "");
                         if !content.contains(&link_content) {
-                            message.contents.push(link_content);
+                            message.contents.push(link_content.clone());
+                            message.link = link_content.to_string();
                         } else {
                             message.link = link_content.to_string();
                         }
@@ -107,7 +116,14 @@ impl Article {
                     }
                 }
             }
-            messages.push(message);
+            if !message.link.is_empty()
+                || !message.contents.is_empty()
+                || !message.title.is_empty()
+                || !message.author.is_empty()
+                || !message.time.is_empty()
+            {
+                messages.push(message);
+            }
         }
 
         let msg = Messages {
@@ -154,7 +170,11 @@ pub mod tests {
         let messages = article.content().await.unwrap();
         for msg in messages.messages {
             println!("Title: {}", msg.title);
-            println!("{}", msg);
+            println!("Author: {}", msg.author);
+            println!("Time: {}", msg.time);
+
+            println!("Link: {}", msg.link);
+            println!("Content: {}", msg);
         }
     }
 
@@ -167,7 +187,11 @@ pub mod tests {
         let messages = article.content().await.unwrap();
         for msg in messages.messages {
             println!("Title: {}", msg.title);
-            println!("{}", msg);
+            println!("Author: {}", msg.author);
+            println!("Time: {}", msg.time);
+
+            println!("Link: {}", msg.link);
+            println!("Content: {}", msg);
         }
     }
 
@@ -204,7 +228,6 @@ pub mod tests {
     }
 
     #[tokio::test]
-    #[ignore]
     async fn test_multi_article_content_all() {
         for idx in 1..=66 {
             let section_link = SectionLink { id: idx };
@@ -213,8 +236,14 @@ pub mod tests {
             for article in article_list.article_list {
                 let messages = article.content().await.unwrap();
                 for msg in messages.messages {
+                    if msg.link.is_empty() {
+                        println!("this Link is empty");
+                    } else if msg.contents.is_empty() {
+                        println!("this content is empty");
+                    } else if msg.author.is_empty() {
+                        println!("this author is empty");
+                    }
                     println!("Title: {}", msg.title);
-                    println!("{}", msg);
                 }
             }
         }

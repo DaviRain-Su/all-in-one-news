@@ -1,4 +1,5 @@
 use super::types::section_link::SectionLink;
+use crate::rustcc::types::message::Message;
 use std::fs::File;
 use std::io::Write;
 use std::sync::Arc;
@@ -96,4 +97,22 @@ pub async fn wrap_run_signle() -> anyhow::Result<()> {
     }
 
     Ok(())
+}
+
+pub async fn parse_rustcc_data(start: usize, end: usize) -> Vec<Message> {
+    let mut messages = vec![];
+    for idx in start..=end {
+        let section_link = SectionLink { id: idx };
+
+        if let Ok(article_list) = section_link.get_articles().await {
+            for article in article_list.article_list {
+                if let Ok(mut value) = article.content().await {
+                    println!("value: {:?}", value);
+                    messages.append(&mut value.messages);
+                }
+            }
+        }
+    }
+
+    messages
 }
