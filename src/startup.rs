@@ -282,7 +282,6 @@ async fn task_rebase_handler(
     let key_id = Uuid::new_v4();
 
     create_rebase_table(&conn_pool).await?;
-    truncate_rebase_table(&conn_pool).await?;
 
     // 在这里编写你的定时任务逻辑
     // 执行插入操作
