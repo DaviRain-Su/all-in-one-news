@@ -238,6 +238,16 @@ async fn create_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
     Ok(())
 }
 
+async fn truncate_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
+    // SQL 清空表格内容的语句
+    let truncate_table_query = "TRUNCATE TABLE new_rebase_daily";
+
+    // 执行清空表格内容的查询
+    sqlx::query(truncate_table_query).execute(pool).await?;
+
+    Ok(())
+}
+
 async fn create_rustcc_table(pool: &PgPool) -> anyhow::Result<()> {
     // SQL 创建表格的语句
     let create_table_query = r#"
@@ -272,6 +282,7 @@ async fn task_rebase_handler(
     let key_id = Uuid::new_v4();
 
     create_rebase_table(&conn_pool).await?;
+    truncate_rebase_table(&conn_pool).await?;
 
     // 在这里编写你的定时任务逻辑
     // 执行插入操作
