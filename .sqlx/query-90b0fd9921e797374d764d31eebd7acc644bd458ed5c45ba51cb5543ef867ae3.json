@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id FROM new_rebase_daily WHERE id = $1",
+  "query": "SELECT id FROM new_rustcc_daily WHERE hash = $1",
   "describe": {
     "columns": [
       {
@@ -11,12 +11,12 @@
     ],
     "parameters": {
       "Left": [
-        "Int4"
+        "Text"
       ]
     },
     "nullable": [
       false
     ]
   },
-  "hash": "fb5411bef8095c843540661b99aeac60afd6a0f2fef40274ffaf987b0006c022"
+  "hash": "90b0fd9921e797374d764d31eebd7acc644bd458ed5c45ba51cb5543ef867ae3"
 }

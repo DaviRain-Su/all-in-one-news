@@ -1,0 +1,23 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n                           INSERT INTO new_rustcc_daily (key_id, hash, id, author, episode, introduce, time, title, url, tag)\n                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)\n                           ",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Text",
+        "Int4",
+        "Text",
+        "Text",
+        "Text",
+        "Timestamptz",
+        "Text",
+        "Text",
+        "TextArray"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "5761643832f430ebeff8df18e5ee240fd3147d579289b97d69ac1136de22b339"
+}
