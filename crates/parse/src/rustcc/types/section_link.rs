@@ -33,10 +33,10 @@ impl SectionLink {
         let document = Html::parse_document(&html);
 
         // 创建一个选择器来选择所有的<a>标签
-        let selector = Selector::parse("a").unwrap();
+        let article_selector = Selector::parse("a").unwrap();
 
         // 找到所有的<a>标签并打印链接和文本内容
-        for link in document.select(&selector) {
+        for link in document.select(&article_selector) {
             let href = link.value().attr("href").unwrap_or("");
             let text = link.text().collect::<String>();
             if href.starts_with("/article") {
@@ -47,6 +47,38 @@ impl SectionLink {
         }
 
         Ok(aticle_links)
+    }
+
+    /// 获取总页数
+    pub async fn totoal_page(&self) -> anyhow::Result<usize> {
+        let section_url = self.to_string();
+        let response = reqwest::get(section_url).await?;
+
+        let html = response.text().await?;
+
+        let mut ids = vec![];
+
+        // 使用scraper解析HTML
+        let document = Html::parse_document(&html);
+
+        // 创建一个选择器来选择所有的<a>标签
+        let page_selector = Selector::parse("a").unwrap();
+
+        // 找到所有的<a>标签并打印链接和文本内容
+        for link in document.select(&page_selector) {
+            let href = link.value().attr("href").unwrap_or("");
+            // let text = link.text().collect::<String>();
+            if href.starts_with("/section") {
+                let id = href
+                    .trim_start_matches(
+                        "/section?id=f4703117-7e6b-4caf-aa22-a3ad3db6898f&current_page=",
+                    )
+                    .to_string();
+                ids.push(id);
+            }
+        }
+
+        Ok(ids.len())
     }
 }
 
@@ -82,10 +114,11 @@ pub mod tests {
     use super::*;
 
     #[tokio::test]
-    #[ignore = ""]
     async fn test_get_first_article() {
         let section_link = SectionLink { id: 1 };
         let article_list = section_link.get_articles().await.unwrap();
-        println!("{:#?}", article_list)
+        println!("{:#?}", article_list);
+        let total_page = section_link.totoal_page().await.unwrap();
+        println!("total_page is {}", total_page);
     }
 }

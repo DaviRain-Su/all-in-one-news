@@ -18,8 +18,6 @@ impl Article {
         let article_url = self.to_string();
         let response = reqwest::get(article_url).await?;
         let body = response.text().await?;
-        // dbg!(body.clone());
-        // println!("body : {}", body);
 
         let mut messages = Messages::new();
 
@@ -148,7 +146,6 @@ pub mod tests {
     use crate::rustcc::types::SectionLink;
 
     #[tokio::test]
-    #[ignore = ""]
     async fn test_article_content() {
         let article = Article {
             link: "1ad7d23c-2392-4cce-9dc7-4bebcb3d51a5".to_string(),
@@ -162,7 +159,6 @@ pub mod tests {
     }
 
     #[tokio::test]
-    #[ignore = ""]
     async fn test_article_content1() {
         let article = Article {
             link: "11c0c645-a5bf-4a73-9e1c-314450e16ee7".to_string(),
@@ -176,7 +172,6 @@ pub mod tests {
     }
 
     #[tokio::test]
-    #[ignore = ""]
     async fn test_article_content2() {
         let article = Article {
             link: "d3109d9a-496f-4051-9f44-16e095d1f74f".to_string(),
@@ -194,11 +189,10 @@ pub mod tests {
     }
 
     #[tokio::test]
-    #[ignore = ""]
+    #[ignore]
     async fn test_multi_article_content() {
         let section_link = SectionLink { id: 1 };
         let article_list = section_link.get_articles().await.unwrap();
-        // println!("{:#?}", article_list)
 
         for article in article_list.article_list {
             let messages = article.content().await.unwrap();
@@ -210,7 +204,7 @@ pub mod tests {
     }
 
     #[tokio::test]
-    #[ignore = ""]
+    #[ignore]
     async fn test_multi_article_content_all() {
         for idx in 1..=66 {
             let section_link = SectionLink { id: idx };
