@@ -1,11 +1,11 @@
 use crate::configuration::{DatabaseSettings, Settings};
-use crate::routes::query_all::{list_all, list_all_items};
-use crate::routes::query_all_author::list_authors;
-use crate::routes::query_by_id::list_by_id;
-use crate::routes::query_by_tag::list_tags;
-use crate::routes::query_by_time::list_by_time;
-use crate::routes::query_latest_news::list_latest_news;
-use crate::routes::query_latest_news_id::list_latest_news_ids;
+use crate::routes::rebase::query_all as rebase_query_all;
+use crate::routes::rebase::query_all_author as rebase_query_all_author;
+use crate::routes::rebase::query_by_id as rebase_query_by_id;
+use crate::routes::rebase::query_by_tag as rebase_query_by_tag;
+use crate::routes::rebase::query_by_time as rebase_query_by_time;
+use crate::routes::rebase::query_latest_news as rebase_query_latest_news;
+use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
 use aion_parse::rebase::get_total_rebase_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use anyhow::Result;
@@ -114,14 +114,23 @@ pub async fn run(
     let app = Router::new()
         .route("/", get(index))
         .route("/health_check", get(health_check))
-        .route("/list", get(list_all_items))
-        .route("/list_all", get(list_all))
-        .route("/authors", get(list_authors))
-        .route("/tags", get(list_tags))
-        .route("/time", get(list_by_time)) // todo (query have problem)
-        .route("/latest", get(list_latest_news))
-        .route("/by_id", get(list_by_id))
-        .route("/ids", get(list_latest_news_ids))
+        .route("/rebase/list", get(rebase_query_all::list_all_items))
+        .route("/rebase/list_all", get(rebase_query_all::list_all))
+        .route(
+            "/rebase/authors",
+            get(rebase_query_all_author::list_authors),
+        )
+        .route("/rebase/tags", get(rebase_query_by_tag::list_tags))
+        .route("/rebase/time", get(rebase_query_by_time::list_by_time)) // todo (query have problem)
+        .route(
+            "/renbase/latest",
+            get(rebase_query_latest_news::list_latest_news),
+        )
+        .route("/rebase/by_id", get(rebase_query_by_id::list_by_id))
+        .route(
+            "/rebase/ids",
+            get(rebase_query_latest_news_id::list_latest_news_ids),
+        )
         // logging so we can see whats going on
         .layer(
             TraceLayer::new_for_http()
@@ -135,8 +144,6 @@ pub async fn run(
             // it is required to add ".allow_headers([http::header::CONTENT_TYPE])"
             // or see this issue https://github.com/tokio-rs/axum/issues/849
             CorsLayer::new()
-                // .allow_origin("http://localhost:3000".parse::<HeaderValue>().unwrap())
-                // .allow_origin("http://localhost:8080".parse::<HeaderValue>().unwrap())
                 .allow_origin(HeaderValue::from_static("*"))
                 .allow_methods([Method::GET]),
         )
@@ -148,8 +155,8 @@ pub async fn run(
 
     // 使用tokio::spawn启动一个异步任务执行定时操作
     tokio::spawn(async move {
-        // 定时执行任务，例如每小时执行一次
-        let mut interval = time::interval(Duration::from_secs(60 * 60));
+        // 定时执行任务，每天执行一次
+        let mut interval = time::interval(Duration::from_secs(60 * 60 * 24));
 
         loop {
             interval.tick().await;
@@ -170,6 +177,7 @@ async fn create_table(pool: &PgPool) -> anyhow::Result<()> {
     let create_table_query = r#"
         CREATE TABLE IF NOT EXISTS new_rebase_daily (
             key_id UUID PRIMARY KEY NOT NULL,
+            hash TEXT NOT NULL,
             id INTEGER NOT NULL,
             author TEXT NOT NULL,
             episode TEXT NOT NULL,
@@ -198,10 +206,10 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyh
 
     // 在这里编写你的定时任务逻辑
     // 执行插入操作
-    // 检查是否已存在相同 ID 的记录
+    // 检查是否已存在相同 HASH 的记录
     let existing_record = sqlx::query!(
-        "SELECT id FROM new_rebase_daily WHERE id = $1",
-        rebase_daily.id as i32
+        "SELECT id FROM new_rebase_daily WHERE hash = $1",
+        rebase_daily.hash
     )
     .fetch_optional(connection_pool.as_mut())
     .await;
@@ -209,7 +217,6 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyh
     match existing_record {
         Ok(Some(_)) => {
             println!("相同 ID 的记录已存在，不执行插入操作");
-            // Err(anyhow::anyhow!("相同 ID 的记录已存在，不执行插入操作"))
         }
         Ok(None) => {
             // 如果不存在相同 ID 的记录，则执行插入操作
@@ -222,10 +229,11 @@ async fn task_handler(rebase_daily: RebaseDaliy, conn_pool: Arc<PgPool>) -> anyh
 
             let result = sqlx::query!(
                            r#"
-                           INSERT INTO new_rebase_daily (key_id, id, author, episode, introduce, time, title, url, tag)
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                           INSERT INTO new_rebase_daily (key_id, hash, id, author, episode, introduce, time, title, url, tag)
+                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
                            "#,
                            key_id,
+                           rebase_daily.hash,
                            rebase_daily.id as i32,
                            rebase_daily.author,
                            rebase_daily.episode,

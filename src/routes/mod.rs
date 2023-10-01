@@ -1,5 +1,5 @@
 mod health_check;
-mod query;
+pub mod rebase;
 
 use axum::http::{request::Parts, StatusCode};
 use axum::{
@@ -8,7 +8,6 @@ use axum::{
     response::IntoResponse,
 };
 pub use health_check::*;
-pub use query::*;
 use sqlx::postgres::PgPool;
 
 pub async fn index() -> impl IntoResponse {

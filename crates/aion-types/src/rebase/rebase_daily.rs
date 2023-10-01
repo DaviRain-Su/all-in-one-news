@@ -1,9 +1,11 @@
 use crate::tag::Tag;
 use aion_parse::rebase::types::RebaseDaliyEpisode;
+use sha256::digest;
 
 #[derive(Debug)]
 pub struct RebaseDaliy {
     pub id: usize,
+    pub hash: String,
     pub author: String,
     pub episode: String,
     pub introduce: String,
@@ -20,8 +22,16 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
         let raw_time = format!("{}T00:00:00.000Z", episode.attributes.time);
         let time = raw_time.parse::<chrono::DateTime<chrono::Utc>>().unwrap();
 
+        //sha256 digest String
+        let mut input = String::new();
+        input.push_str(&episode.attributes.title);
+        input.push_str(&episode.attributes.introduce);
+        input.push_str(&episode.attributes.author);
+        let hash = digest(input);
+
         Ok(Self {
             id: episode.id,
+            hash,
             author: episode.attributes.author,
             episode: episode.attributes.episode,
             introduce: episode.attributes.introduce,

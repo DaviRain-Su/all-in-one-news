@@ -1,8 +1,8 @@
 -- Add migration script here
--- Create Subscriptions Table
 CREATE TABLE new_rebase_daily(
 key_id uuid NOT NULL UNIQUE,
 PRIMARY KEY (key_id),
+hash TEXT NOT NULL,
 id INTEGER NOT NULL,
 author TEXT NOT NULL,
 episode TEXT NOT NULL,
