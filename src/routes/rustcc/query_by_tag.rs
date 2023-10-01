@@ -22,7 +22,7 @@ pub async fn list_tags(
 
     let tags_result = query_as!(
             ListAllItemsResponse,
-            "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily WHERE $1 = ANY(tag)",
+            "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily WHERE $1 = ANY(tag)",
             &query_params.tag
         )
         .fetch_all(connection_pool.as_mut())

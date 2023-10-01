@@ -52,7 +52,7 @@ pub async fn list_by_time(
 
     let tags_result = query_as!(
             ListAllItemsResponse,
-            "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily WHERE time = $1",
+            "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily WHERE time = $1",
             &query_params.time
         )
         .fetch_all(connection_pool.as_mut())

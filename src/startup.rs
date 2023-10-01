@@ -9,6 +9,7 @@ use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
 
 use crate::routes::rustcc::query_all as rustcc_query_all;
 use crate::routes::rustcc::query_all_author as rustcc_query_all_author;
+use crate::routes::rustcc::query_by_hash as rustcc_query_by_hash;
 use crate::routes::rustcc::query_by_id as rustcc_query_by_id;
 use crate::routes::rustcc::query_by_tag as rustcc_query_by_tag;
 use crate::routes::rustcc::query_by_time as rustcc_query_by_time;
@@ -154,6 +155,7 @@ pub async fn run(
             get(rustcc_query_latest_news::list_latest_news),
         )
         .route("/rustcc/by_id", get(rustcc_query_by_id::list_by_id))
+        .route("/rustcc/by_hash", get(rustcc_query_by_hash::list_by_hash))
         .route(
             "/rustcc/ids",
             get(rustcc_query_latest_news_id::list_latest_news_ids),
@@ -238,6 +240,7 @@ async fn create_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
     Ok(())
 }
 
+#[allow(dead_code)]
 async fn truncate_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
     // SQL 清空表格内容的语句
     let truncate_table_query = "TRUNCATE TABLE new_rebase_daily";

@@ -15,7 +15,7 @@ pub async fn list_latest_news(
 
     let tags_result = query_as!(
            ListAllItemsResponse,
-           "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC LIMIT 10",
+           "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC LIMIT 10",
        )
        .fetch_all(connection_pool.as_mut())
        .await;

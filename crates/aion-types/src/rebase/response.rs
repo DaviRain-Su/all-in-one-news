@@ -39,6 +39,7 @@ pub struct ListAllItemsResponse {
             serialize_with = "serialize_id_as_num" // 序列化时输出为数字
         )]
     pub id: i32,
+    pub hash: String,
     pub author: String,
     pub episode: String,
     pub introduce: String,

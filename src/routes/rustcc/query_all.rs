@@ -27,7 +27,7 @@ pub async fn list_all_items(
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily OFFSET $1 LIMIT $2",
+        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily OFFSET $1 LIMIT $2",
         offset,
         limit
     )
@@ -49,7 +49,7 @@ pub async fn list_all(DatabaseConnection(mut conn_pool): DatabaseConnection) -> 
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily ORDER BY time DESC",
+        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily ORDER BY time DESC",
     )
     .fetch_all(connection_pool.as_mut())
     .await;

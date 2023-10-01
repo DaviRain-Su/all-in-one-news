@@ -22,7 +22,7 @@ pub async fn list_authors(
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily",
+        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily",
     )
     .fetch_all(connection_pool.as_mut())
     .await;
