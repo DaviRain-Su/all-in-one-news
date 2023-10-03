@@ -27,7 +27,7 @@ pub async fn list_all_items(
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily OFFSET $1 LIMIT $2",
+        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC OFFSET $1 LIMIT $2",
         offset,
         limit
     )
