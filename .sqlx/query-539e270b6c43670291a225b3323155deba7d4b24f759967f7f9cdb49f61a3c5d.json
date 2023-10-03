@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily OFFSET $1 LIMIT $2",
+  "query": "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC OFFSET $1 LIMIT $2",
   "describe": {
     "columns": [
       {
@@ -67,5 +67,5 @@
       false
     ]
   },
-  "hash": "d761d1fee9f857e5c0d14053e52f18bd092f7dc275c1c7322d351bd146d94cf0"
+  "hash": "539e270b6c43670291a225b3323155deba7d4b24f759967f7f9cdb49f61a3c5d"
 }
