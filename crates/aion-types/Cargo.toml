@@ -7,7 +7,7 @@ edition = "2021"
 
 [dependencies]
 chrono = { version = "0.4.30", features = ["rkyv"] }
-serde = { version = "1.0.188", features = ["derive"] }
+serde = { version = "1.0.192", features = ["derive"] }
 aion-parse = { path = "../parse" }
 anyhow = "1.0.75"
 async-openai = "0.14.3"
