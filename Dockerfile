@@ -1,21 +1,17 @@
-FROM lukemathwalker/cargo-chef:latest-rust-1.78.0 as chef
+# we use the latest Rust stable release as base image
+FROM rust:1.78.0 AS builder
+# Let's switch our working directory to `app` (equivalent to `cd app`)
+# The `app` folder will be created for us by Docker in case it does not
+# exist already.
 WORKDIR /app
+# Install the required system dependencies for our linking configuration
 RUN apt update && apt install lld clang -y
-FROM chef as planner
-COPY . .
-# Compute a lock-like file for our project
-RUN cargo chef prepare --recipe-path recipe.json
-FROM chef as builder
-COPY --from=planner /app/recipe.json recipe.json
-# Build our project dependencies, not our application!
-RUN cargo chef cook --release --recipe-path recipe.json
-# Up to this point, if our dependency tree stays the same,
-# all layers should be cached.
+# Copy all files from our working environment to our Docker image
 COPY . .
 ENV SQLX_OFFLINE true
-# Build our project
-RUN cargo build --release --bin aion
-
+# Let's build our binary!
+# We'll use the release profile to make it faaaast
+RUN cargo build --release
 
 # runtime stage
 FROM debian:bullseye-slim AS runtime
@@ -33,5 +29,4 @@ RUN apt-get update -y \
 COPY --from=builder /app/target/release/aion aion
 COPY configuration configuration
 ENV APP_ENVIRONMENT production
-# ENTRYPOINT ["./aion"]
-CMD ["./aion"]
+ENTRYPOINT ["./aion"]
