@@ -1,5 +1,6 @@
 use crate::tag::Tag;
-use aion_parse::{rebase::types::RebaseDaliyEpisode, rustcc::types::message::Message};
+use aion_parse::common::Message;
+use aion_parse::rebase::types::RebaseDaliyEpisode;
 use sha256::digest;
 
 #[derive(Debug)]

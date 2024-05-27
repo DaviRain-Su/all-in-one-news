@@ -1,6 +1,5 @@
+pub mod common;
 pub mod rebase;
-pub mod rustcc;
-
 use std::fs::File;
 use std::io::prelude::*;
 use std::sync::{Arc, Mutex};

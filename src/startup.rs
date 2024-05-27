@@ -10,7 +10,6 @@ use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
 use actix_web::dev::Server;
 use actix_web::{web, App, HttpServer};
 use aion_parse::rebase::get_total_rebase_daily_episode;
-use aion_parse::rustcc::get_total_rustcc_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use anyhow::Result;
 use sqlx::postgres::PgPoolOptions;
@@ -68,7 +67,6 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     let state = web::Data::new(conn_pool);
     let state_clone = state.clone();
     let state1 = state.clone();
-    let state2 = state.clone();
     let server = HttpServer::new(move || {
         App::new()
             .wrap(TracingLogger::default())
@@ -126,21 +124,6 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
         }
     });
 
-    // 使用tokio::spawn启动一个异步任务执行定时操作
-    tokio::spawn(async move {
-        // 定时执行任务，每天执行一次
-        let mut interval = time::interval(Duration::from_secs(60 * 60 * 24));
-
-        loop {
-            interval.tick().await;
-
-            // 在这里调用您的定时任务函数
-            if let Err(err) = process_load_all_rustcc_daily(state2.clone()).await {
-                eprintln!("task_rustcc_handler 定时任务执行出错: {:?}", err);
-            }
-        }
-    });
-
     // run it with hyper on localhost:3000
     Ok(server)
 }
@@ -175,29 +158,6 @@ async fn truncate_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
 
     // 执行清空表格内容的查询
     sqlx::query(truncate_table_query).execute(pool).await?;
-
-    Ok(())
-}
-
-async fn create_rustcc_table(pool: &PgPool) -> anyhow::Result<()> {
-    // SQL 创建表格的语句
-    let create_table_query = r#"
-        CREATE TABLE IF NOT EXISTS new_rustcc_daily (
-            key_id UUID PRIMARY KEY NOT NULL,
-            hash TEXT NOT NULL,
-            id INTEGER NOT NULL,
-            author TEXT NOT NULL,
-            episode TEXT NOT NULL,
-            introduce TEXT NOT NULL,
-            time TIMESTAMPTZ NOT NULL,
-            title TEXT NOT NULL,
-            url TEXT NOT NULL,
-            tag TEXT[] NOT NULL
-        )
-    "#;
-
-    // 执行创建表格的查询
-    sqlx::query(create_table_query).execute(pool).await?;
 
     Ok(())
 }
@@ -272,91 +232,11 @@ async fn task_rebase_handler(
     Ok(())
 }
 
-async fn task_rustcc_handler(
-    rebase_daily: RebaseDaliy,
-    conn_pool: web::Data<PgPool>,
-) -> anyhow::Result<()> {
-    let mut connection_pool = conn_pool.acquire().await?;
-
-    println!("task_rustcc_handler 定时任务执行中...");
-
-    let key_id = Uuid::new_v4();
-
-    create_rustcc_table(&conn_pool).await?;
-
-    // 在这里编写你的定时任务逻辑
-    // 执行插入操作
-    // 检查是否已存在相同 HASH 的记录
-    let existing_record = sqlx::query!(
-        "SELECT id FROM new_rustcc_daily WHERE hash = $1",
-        rebase_daily.hash
-    )
-    .fetch_optional(connection_pool.as_mut())
-    .await;
-
-    match existing_record {
-        Ok(Some(_)) => {
-            println!("task_rustcc_handler 相同 ID 的记录已存在，不执行插入操作");
-        }
-        Ok(None) => {
-            // 如果不存在相同 ID 的记录，则执行插入操作
-            // TODO( tag 可以在后面更新)
-            let tags = rebase_daily
-                .tag
-                .into_iter()
-                .map(|v| v.to_string())
-                .collect::<Vec<String>>();
-
-            let result = sqlx::query!(
-                           r#"
-                           INSERT INTO new_rustcc_daily (key_id, hash, id, author, episode, introduce, time, title, url, tag)
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
-                           "#,
-                           key_id,
-                           rebase_daily.hash,
-                           rebase_daily.id as i32,
-                           rebase_daily.author,
-                           rebase_daily.episode,
-                           rebase_daily.introduce,
-                           rebase_daily.time,
-                           rebase_daily.title,
-                           rebase_daily.url,
-                           &tags // 注意此处使用引用来插入 Vec<String>
-                       )
-                       .execute(connection_pool.as_mut())
-                       .await;
-
-            match result {
-                Ok(_) => {
-                    println!("task_rustcc_handler 插入成功");
-                }
-                Err(e) => {
-                    println!("task_rustcc_handler 插入失败: {:?}", e);
-                }
-            }
-        }
-        Err(e) => {
-            println!("task_rustcc_handler 检查记录时出错: {:?}", e);
-        }
-    }
-    Ok(())
-}
-
 pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
     let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
     for item in total_rebase_daily_episode {
         let conn_pool = conn_pool.clone();
         task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
-    }
-
-    Ok(())
-}
-
-pub async fn process_load_all_rustcc_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
-    let total_rustcc_daily_episode = get_total_rustcc_daily_episode().await?;
-    for item in total_rustcc_daily_episode {
-        let conn_pool = conn_pool.clone();
-        task_rustcc_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
     }
 
     Ok(())
