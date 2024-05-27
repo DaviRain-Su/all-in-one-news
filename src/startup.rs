@@ -72,7 +72,7 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     let server =
         HttpServer::new(move || {
             let cors = Cors::default()
-                .allowed_origin("*")
+                .supports_credentials()
                 .allowed_methods(vec!["GET", "POST"])
                 .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
                 .allowed_header(http::header::CONTENT_TYPE)
