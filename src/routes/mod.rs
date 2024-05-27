@@ -5,5 +5,5 @@ use actix_web::HttpResponse;
 pub use health_check::*;
 
 pub async fn index() -> HttpResponse {
-    HttpResponse::Ok().finish()
+    HttpResponse::Ok().body("Hello world!")
 }

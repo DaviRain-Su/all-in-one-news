@@ -43,6 +43,7 @@ secrecy = { version = "0.8", features = ["serde"] }
 serde-aux = "4.2"
 regex = "1"
 tracing-actix-web = "0.7.10"
+actix-cors = "0.7.0"
 
 # aion
 aion-types = { version = "0.1.0", path = "./crates/aion-types" }

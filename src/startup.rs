@@ -7,7 +7,9 @@ use crate::routes::rebase::query_by_time as rebase_query_by_time;
 use crate::routes::rebase::query_latest_news as rebase_query_latest_news;
 use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
 
+use actix_cors::Cors;
 use actix_web::dev::Server;
+use actix_web::HttpResponse;
 use actix_web::{web, App, HttpServer};
 use aion_parse::rebase::get_total_rebase_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
@@ -67,47 +69,59 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     let state = web::Data::new(conn_pool);
     let state_clone = state.clone();
     let state1 = state.clone();
-    let server = HttpServer::new(move || {
-        App::new()
-            .wrap(TracingLogger::default())
-            .route("/", web::get().to(index))
-            .route("/health_check", web::get().to(health_check))
-            .route(
-                "/rebase/list",
-                web::get().to(rebase_query_all::list_all_items),
-            )
-            .route(
-                "/rebase/list_all",
-                web::get().to(rebase_query_all::list_all),
-            )
-            .route(
-                "/rebase/authors",
-                web::get().to(rebase_query_all_author::list_authors),
-            )
-            .route(
-                "/rebase/tags",
-                web::get().to(rebase_query_by_tag::list_tags),
-            )
-            .route(
-                "/rebase/time",
-                web::get().to(rebase_query_by_time::list_by_time),
-            ) // todo (query have problem)
-            .route(
-                "/rebase/latest",
-                web::get().to(rebase_query_latest_news::list_latest_news),
-            )
-            .route(
-                "/rebase/by_id",
-                web::get().to(rebase_query_by_id::list_by_id),
-            )
-            .route(
-                "/rebase/ids",
-                web::get().to(rebase_query_latest_news_id::list_latest_news_ids),
-            )
-            .app_data(state_clone.clone())
-    })
-    .listen(listener)?
-    .run();
+    let server =
+        HttpServer::new(move || {
+            let cors = Cors::default()
+                .allowed_origin("*")
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                .allowed_header(http::header::CONTENT_TYPE)
+                .max_age(3600);
+
+            App::new()
+                .wrap(TracingLogger::default())
+                .wrap(cors)
+                .route("/", web::get().to(index))
+                .route("/health_check", web::get().to(health_check))
+                .route(
+                    "/rebase/list",
+                    web::get().to(rebase_query_all::list_all_items),
+                )
+                .route(
+                    "/rebase/list_all",
+                    web::get().to(rebase_query_all::list_all),
+                )
+                .route(
+                    "/rebase/authors",
+                    web::get().to(rebase_query_all_author::list_authors),
+                )
+                .route(
+                    "/rebase/tags",
+                    web::get().to(rebase_query_by_tag::list_tags),
+                )
+                .route(
+                    "/rebase/time",
+                    web::get().to(rebase_query_by_time::list_by_time),
+                ) // todo (query have problem)
+                .route(
+                    "/rebase/latest",
+                    web::get().to(rebase_query_latest_news::list_latest_news),
+                )
+                .route(
+                    "/rebase/by_id",
+                    web::get().to(rebase_query_by_id::list_by_id),
+                )
+                .route(
+                    "/rebase/ids",
+                    web::get().to(rebase_query_latest_news_id::list_latest_news_ids),
+                )
+                .service(web::resource("/echo").route(
+                    web::post().to(|data: String| async move { HttpResponse::Ok().body(data) }),
+                ))
+                .app_data(state_clone.clone())
+        })
+        .listen(listener)?
+        .run();
 
     // 使用tokio::spawn启动一个异步任务执行定时操作
     tokio::spawn(async move {
