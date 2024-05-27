@@ -1,6 +1,5 @@
 mod health_check;
 pub mod rebase;
-pub mod rustcc;
 
 use axum::http::{request::Parts, StatusCode};
 use axum::{

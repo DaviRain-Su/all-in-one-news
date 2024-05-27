@@ -7,15 +7,6 @@ use crate::routes::rebase::query_by_time as rebase_query_by_time;
 use crate::routes::rebase::query_latest_news as rebase_query_latest_news;
 use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
 
-use crate::routes::rustcc::query_all as rustcc_query_all;
-use crate::routes::rustcc::query_all_author as rustcc_query_all_author;
-use crate::routes::rustcc::query_by_hash as rustcc_query_by_hash;
-use crate::routes::rustcc::query_by_id as rustcc_query_by_id;
-use crate::routes::rustcc::query_by_tag as rustcc_query_by_tag;
-use crate::routes::rustcc::query_by_time as rustcc_query_by_time;
-use crate::routes::rustcc::query_latest_news as rustcc_query_latest_news;
-use crate::routes::rustcc::query_latest_news_id as rustcc_query_latest_news_id;
-
 use aion_parse::rebase::get_total_rebase_daily_episode;
 use aion_parse::rustcc::get_total_rustcc_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
@@ -141,24 +132,6 @@ pub async fn run(
         .route(
             "/rebase/ids",
             get(rebase_query_latest_news_id::list_latest_news_ids),
-        )
-        .route("/rustcc/list", get(rustcc_query_all::list_all_items))
-        .route("/rustcc/list_all", get(rustcc_query_all::list_all))
-        .route(
-            "/rustcc/authors",
-            get(rustcc_query_all_author::list_authors),
-        )
-        .route("/rustcc/tags", get(rustcc_query_by_tag::list_tags))
-        .route("/rustcc/time", get(rustcc_query_by_time::list_by_time)) // todo (query have problem)
-        .route(
-            "/rustcc/latest",
-            get(rustcc_query_latest_news::list_latest_news),
-        )
-        .route("/rustcc/by_id", get(rustcc_query_by_id::list_by_id))
-        .route("/rustcc/by_hash", get(rustcc_query_by_hash::list_by_hash))
-        .route(
-            "/rustcc/ids",
-            get(rustcc_query_latest_news_id::list_latest_news_ids),
         )
         // logging so we can see whats going on
         .layer(
