@@ -71,16 +71,9 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     let state1 = state.clone();
     let server =
         HttpServer::new(move || {
-            let cors = Cors::default()
-                .supports_credentials()
-                .allowed_methods(vec!["GET", "POST"])
-                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
-                .allowed_header(http::header::CONTENT_TYPE)
-                .max_age(3600);
-
             App::new()
                 .wrap(TracingLogger::default())
-                .wrap(cors)
+                .wrap(Cors::default())
                 .route("/", web::get().to(index))
                 .route("/health_check", web::get().to(health_check))
                 .route(
