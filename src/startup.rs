@@ -33,12 +33,7 @@ pub struct Application {
 impl Application {
     pub async fn build(configuration: Settings) -> Result<Self> {
         let connection_pool = get_connection_pool(&configuration.database);
-
-        let address = format!(
-            "{}:{}",
-            configuration.application.host, configuration.application.port
-        );
-
+        let address = configuration.application.connection_string();
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr()?.port();
         let server = run(listener, connection_pool).await?;
@@ -64,16 +59,22 @@ pub fn get_connection_pool(database_configuration: &DatabaseSettings) -> PgPool 
 }
 
 pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
-    tracing::debug!("listening on {}", listener.local_addr()?);
-
+    tracing::info!("listening on {}", listener.local_addr()?);
     let state = web::Data::new(conn_pool);
     let state_clone = state.clone();
     let state1 = state.clone();
     let server =
         HttpServer::new(move || {
+            let cors = Cors::default()
+                //.allowed_origin("http://localhost:8080") // USE THIS FOR LOCAL DEV
+                .allowed_origin("https://all-in-one-news-frontend-davirain-su.vercel.app/")
+                .allowed_methods(vec!["GET", "POST"])
+                .allowed_headers(vec![http::header::AUTHORIZATION, http::header::ACCEPT])
+                .allowed_header(http::header::CONTENT_TYPE)
+                .max_age(3600);
             App::new()
                 .wrap(TracingLogger::default())
-                .wrap(Cors::default())
+                .wrap(cors)
                 .route("/", web::get().to(index))
                 .route("/health_check", web::get().to(health_check))
                 .route(
@@ -119,7 +120,7 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     // 使用tokio::spawn启动一个异步任务执行定时操作
     tokio::spawn(async move {
         // 定时执行任务，每天执行一次
-        let mut interval = time::interval(Duration::from_secs(60 * 60 * 24));
+        let mut interval = time::interval(Duration::from_secs(60 * 60));
 
         loop {
             interval.tick().await;
@@ -239,6 +240,7 @@ async fn task_rebase_handler(
     Ok(())
 }
 
+#[tracing::instrument(name = "process_load_all_rebase_daily", skip(conn_pool))]
 pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
     let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
     for item in total_rebase_daily_episode {

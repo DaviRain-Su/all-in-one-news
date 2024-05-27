@@ -32,6 +32,12 @@ pub struct ApplicationSettings {
     pub host: String,
 }
 
+impl ApplicationSettings {
+    pub fn connection_string(&self) -> String {
+        format!("{}:{}", self.host, self.port)
+    }
+}
+
 pub fn get_configuration() -> Result<Settings> {
     let base_path = std::env::current_dir()
         .map_err(|_| anyhow::anyhow!("Failed to determine the current directory"))?;
