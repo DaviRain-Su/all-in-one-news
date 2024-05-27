@@ -1,17 +1,12 @@
 use all_in_one_news::configuration::get_configuration;
 use all_in_one_news::startup::Application;
 
-use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
+use all_in_one_news::telemetry::{get_subscriber, init_subscriber};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
-    tracing_subscriber::registry()
-        .with(
-            tracing_subscriber::EnvFilter::try_from_default_env()
-                .unwrap_or_else(|_| "aion=trace,tower_http=debug".into()),
-        )
-        .with(tracing_subscriber::fmt::layer())
-        .init();
+    let subscriber = get_subscriber("aion".into(), "info".into(), std::io::stdout);
+    init_subscriber(subscriber)?;
 
     let configuration = get_configuration()?;
 
