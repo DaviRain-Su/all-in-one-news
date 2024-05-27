@@ -10,6 +10,11 @@ pub struct AuthorsResponse {
     pub author: Vec<String>,
 }
 
+#[tracing::instrument(
+    name = "Querying all authors",
+    skip(conn_pool),
+    fields(db_table = "new_rebase_daily")
+)]
 pub async fn list_authors(conn_pool: web::Data<PgPool>) -> HttpResponse {
     // Execute the database query
     let result = query_as!(
@@ -32,6 +37,9 @@ pub async fn list_authors(conn_pool: web::Data<PgPool>) -> HttpResponse {
             authors.dedup();
             HttpResponse::Ok().json(AuthorsResponse { author: authors })
         }
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

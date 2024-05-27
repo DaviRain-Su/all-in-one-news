@@ -9,6 +9,13 @@ pub struct IdQuery {
     pub id: i32,
 }
 
+#[tracing::instrument(
+    name = "Querying items by id",
+    skip(query_params, conn_pool),
+    fields(
+        id = %query_params.id,
+    )
+)]
 pub async fn list_by_id(
     query_params: web::Form<IdQuery>,
     conn_pool: web::Data<PgPool>,
@@ -23,6 +30,9 @@ pub async fn list_by_id(
 
     match tags_result {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

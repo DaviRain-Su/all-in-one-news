@@ -348,7 +348,6 @@ dependencies = [
  "serde_json",
  "sqlx",
  "surf",
- "thiserror",
  "tokio",
  "tracing",
  "tracing-actix-web",

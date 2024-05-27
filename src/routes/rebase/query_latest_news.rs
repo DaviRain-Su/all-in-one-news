@@ -4,6 +4,7 @@ use aion_types::rebase::response::ListAllItemsResponse;
 use sqlx::query_as;
 use sqlx::PgPool;
 
+#[tracing::instrument(name = "Query latest news", skip(conn_pool))]
 pub async fn list_latest_news(conn_pool: web::Data<PgPool>) -> HttpResponse {
     let tags_result = query_as!(
            ListAllItemsResponse,
@@ -14,6 +15,9 @@ pub async fn list_latest_news(conn_pool: web::Data<PgPool>) -> HttpResponse {
 
     match tags_result {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

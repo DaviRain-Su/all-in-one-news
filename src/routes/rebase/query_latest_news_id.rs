@@ -4,6 +4,11 @@ use aion_types::rebase::response::ListAllItemsResponse;
 use sqlx::query_as;
 use sqlx::PgPool;
 
+#[tracing::instrument(
+    name = "Query latest news ids",
+    skip(connection_pool),
+    fields(service = "rebase", region = "asia")
+)]
 pub async fn list_latest_news_ids(connection_pool: web::Data<PgPool>) -> HttpResponse {
     let result = query_as!(
         ListAllItemsResponse,
@@ -17,6 +22,9 @@ pub async fn list_latest_news_ids(connection_pool: web::Data<PgPool>) -> HttpRes
             let ids = items.into_iter().map(|item| item.id).collect::<Vec<i32>>();
             HttpResponse::Ok().json(ids)
         }
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

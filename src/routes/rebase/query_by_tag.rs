@@ -9,6 +9,13 @@ pub struct TagsQuery {
     pub tag: String,
 }
 
+#[tracing::instrument(
+    name = "Querying items by tag",
+    skip(query_params, conn_pool),
+    fields(
+        tag = %query_params.tag
+    )
+)]
 pub async fn list_tags(
     query_params: web::Form<TagsQuery>,
     conn_pool: web::Data<PgPool>,
@@ -23,6 +30,9 @@ pub async fn list_tags(
 
     match tags_result {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

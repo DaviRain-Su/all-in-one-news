@@ -39,6 +39,13 @@ where
         .map(|dt| dt.with_timezone(&Utc))
 }
 
+#[tracing::instrument(
+    name = "Query items by time",
+    skip(query_params, conn_poll),
+    fields(
+        time = %query_params.time
+    )
+)]
 pub async fn list_by_time(
     query_params: web::Form<TimeQuery>,
     conn_poll: web::Data<PgPool>,
@@ -53,6 +60,9 @@ pub async fn list_by_time(
 
     match tags_result {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }

@@ -10,6 +10,14 @@ pub struct ListAllItemsQuery {
     per_page: i64,
 }
 
+#[tracing::instrument(
+    name = "Retrieving all items from the database",
+    skip(query, pool),
+    fields(
+        page = %query.page,
+        per_page = %query.per_page
+    )
+)]
 pub async fn list_all_items(
     query: web::Form<ListAllItemsQuery>,
     pool: web::Data<PgPool>,
@@ -30,10 +38,14 @@ pub async fn list_all_items(
 
     match result {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }
 
+#[tracing::instrument(name = "Retrieving all items from the database", skip(pool))]
 pub async fn list_all(pool: web::Data<PgPool>) -> HttpResponse {
     // Execute the database query
     let result = query_as!(
@@ -45,6 +57,9 @@ pub async fn list_all(pool: web::Data<PgPool>) -> HttpResponse {
 
     match result {
         Ok(items) => HttpResponse::Ok().json(items),
-        Err(_) => HttpResponse::InternalServerError().finish(),
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
     }
 }
