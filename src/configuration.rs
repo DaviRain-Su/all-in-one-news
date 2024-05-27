@@ -65,11 +65,9 @@ pub fn get_configuration() -> Result<Settings> {
 
     // Try to convert the configuration values it read into
     // our Settings type
-    let settings = settings
+    settings
         .try_deserialize::<Settings>()
-        .map_err(|e| anyhow::anyhow!(e))?;
-
-    Ok(settings)
+        .map_err(|e| anyhow::anyhow!(e))
 }
 
 impl DatabaseSettings {
