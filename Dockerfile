@@ -31,7 +31,8 @@ WORKDIR /app
 RUN apt-get update -y && apt-get install -y --no-install-recommends \
     build-essential \
     wget \
-    ca-certificates
+    ca-certificates \
+    zlib1g-dev  # 添加这行来安装 zlib 开发包
 
 # Download and install OpenSSL 3.0 from source
 RUN wget https://www.openssl.org/source/openssl-3.0.0.tar.gz \
