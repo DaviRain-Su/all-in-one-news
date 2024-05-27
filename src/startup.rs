@@ -7,32 +7,26 @@ use crate::routes::rebase::query_by_time as rebase_query_by_time;
 use crate::routes::rebase::query_latest_news as rebase_query_latest_news;
 use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
 
+use actix_web::dev::Server;
+use actix_web::{web, App, HttpServer};
 use aion_parse::rebase::get_total_rebase_daily_episode;
 use aion_parse::rustcc::get_total_rustcc_daily_episode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use anyhow::Result;
-use axum::http::{HeaderValue, Method};
-use axum::routing::IntoMakeService;
-use axum::Server;
-use axum::{routing::get, Router};
-use hyper::server::conn::AddrIncoming;
 use sqlx::postgres::PgPoolOptions;
 use sqlx::PgPool;
 use std::net::TcpListener;
-use std::sync::Arc;
 use std::time::Duration;
 use tokio::time;
-use tower_http::cors::CorsLayer;
-use tower_http::trace::{DefaultMakeSpan, TraceLayer};
+use tracing_actix_web::TracingLogger;
 use uuid::Uuid;
 
 use crate::routes::health_check;
 use crate::routes::index;
 
-#[derive(Debug)]
 pub struct Application {
     pub port: u16,
-    pub server: Server<AddrIncoming, IntoMakeService<Router>>,
+    pub server: Server,
 }
 
 impl Application {
@@ -46,13 +40,7 @@ impl Application {
 
         let listener = TcpListener::bind(address)?;
         let port = listener.local_addr()?.port();
-        let server = run(
-            listener,
-            connection_pool,
-            // new argument from configuration
-            configuration.application.base_url,
-        )
-        .await?;
+        let server = run(listener, connection_pool).await?;
 
         Ok(Self { port, server })
     }
@@ -74,87 +62,54 @@ pub fn get_connection_pool(database_configuration: &DatabaseSettings) -> PgPool 
         .connect_lazy_with(database_configuration.with_db())
 }
 
-// ref: axum: https://github.com/tokio-rs/axum/blob/main/examples/oauth/src/main.rs#L78
-#[derive(Clone)]
-struct AppState {
-    database: PgPool,
-    base_url: ApplicationBaseUrl,
-}
-
-impl axum::extract::FromRef<AppState> for PgPool {
-    fn from_ref(state: &AppState) -> Self {
-        state.database.clone()
-    }
-}
-
-impl axum::extract::FromRef<AppState> for ApplicationBaseUrl {
-    fn from_ref(state: &AppState) -> Self {
-        state.base_url.clone()
-    }
-}
-
-// We need to define a wrapper type in order to retrieve the URL
-// in the `subscribe` handler.
-// Retrieval from the context, in actix-web, is type-based: using
-// a raw `String` would expose us to conflicts.
-#[derive(Clone, Debug)]
-pub struct ApplicationBaseUrl(pub String);
-
-pub async fn run(
-    listener: TcpListener,
-    conn_pool: PgPool,
-    base_url: String,
-) -> Result<Server<AddrIncoming, IntoMakeService<Router>>> {
+pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     tracing::debug!("listening on {}", listener.local_addr()?);
 
-    let state = AppState {
-        database: conn_pool.clone(),
-        base_url: ApplicationBaseUrl(base_url),
-    };
-
-    // build our application with a single route
-    let app = Router::new()
-        .route("/", get(index))
-        .route("/health_check", get(health_check))
-        .route("/rebase/list", get(rebase_query_all::list_all_items))
-        .route("/rebase/list_all", get(rebase_query_all::list_all))
-        .route(
-            "/rebase/authors",
-            get(rebase_query_all_author::list_authors),
-        )
-        .route("/rebase/tags", get(rebase_query_by_tag::list_tags))
-        .route("/rebase/time", get(rebase_query_by_time::list_by_time)) // todo (query have problem)
-        .route(
-            "/rebase/latest",
-            get(rebase_query_latest_news::list_latest_news),
-        )
-        .route("/rebase/by_id", get(rebase_query_by_id::list_by_id))
-        .route(
-            "/rebase/ids",
-            get(rebase_query_latest_news_id::list_latest_news_ids),
-        )
-        // logging so we can see whats going on
-        .layer(
-            TraceLayer::new_for_http()
-                .make_span_with(DefaultMakeSpan::default().include_headers(true)),
-        )
-        .layer(
-            // see https://docs.rs/tower-http/latest/tower_http/cors/index.html
-            // for more details
-            //
-            // pay attention that for some request types like posting content-type: application/json
-            // it is required to add ".allow_headers([http::header::CONTENT_TYPE])"
-            // or see this issue https://github.com/tokio-rs/axum/issues/849
-            CorsLayer::new()
-                .allow_origin(HeaderValue::from_static("*"))
-                .allow_methods([Method::GET]),
-        )
-        .with_state(state);
-
-    let pg_pool = conn_pool;
-    let pg = Arc::new(pg_pool);
-    let pg_clone = pg.clone();
-    let pg_clone1 = pg.clone();
+    let state = web::Data::new(conn_pool);
+    let state_clone = state.clone();
+    let state1 = state.clone();
+    let state2 = state.clone();
+    let server = HttpServer::new(move || {
+        App::new()
+            .wrap(TracingLogger::default())
+            .route("/", web::get().to(index))
+            .route("/health_check", web::get().to(health_check))
+            .route(
+                "/rebase/list",
+                web::get().to(rebase_query_all::list_all_items),
+            )
+            .route(
+                "/rebase/list_all",
+                web::get().to(rebase_query_all::list_all),
+            )
+            .route(
+                "/rebase/authors",
+                web::get().to(rebase_query_all_author::list_authors),
+            )
+            .route(
+                "/rebase/tags",
+                web::get().to(rebase_query_by_tag::list_tags),
+            )
+            .route(
+                "/rebase/time",
+                web::get().to(rebase_query_by_time::list_by_time),
+            ) // todo (query have problem)
+            .route(
+                "/rebase/latest",
+                web::get().to(rebase_query_latest_news::list_latest_news),
+            )
+            .route(
+                "/rebase/by_id",
+                web::get().to(rebase_query_by_id::list_by_id),
+            )
+            .route(
+                "/rebase/ids",
+                web::get().to(rebase_query_latest_news_id::list_latest_news_ids),
+            )
+            .app_data(state_clone.clone())
+    })
+    .listen(listener)?
+    .run();
 
     // 使用tokio::spawn启动一个异步任务执行定时操作
     tokio::spawn(async move {
@@ -165,7 +120,7 @@ pub async fn run(
             interval.tick().await;
 
             // 在这里调用您的定时任务函数
-            if let Err(err) = process_load_all_rebase_daily(pg_clone.clone()).await {
+            if let Err(err) = process_load_all_rebase_daily(state1.clone()).await {
                 eprintln!("process_load_all_rebase_daily 定时任务执行出错: {:?}", err);
             }
         }
@@ -180,14 +135,14 @@ pub async fn run(
             interval.tick().await;
 
             // 在这里调用您的定时任务函数
-            if let Err(err) = process_load_all_rustcc_daily(pg_clone1.clone()).await {
+            if let Err(err) = process_load_all_rustcc_daily(state2.clone()).await {
                 eprintln!("task_rustcc_handler 定时任务执行出错: {:?}", err);
             }
         }
     });
 
     // run it with hyper on localhost:3000
-    Ok(axum::Server::from_tcp(listener)?.serve(app.into_make_service()))
+    Ok(server)
 }
 
 async fn create_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
@@ -249,7 +204,7 @@ async fn create_rustcc_table(pool: &PgPool) -> anyhow::Result<()> {
 
 async fn task_rebase_handler(
     rebase_daily: RebaseDaliy,
-    conn_pool: Arc<PgPool>,
+    conn_pool: web::Data<PgPool>,
 ) -> anyhow::Result<()> {
     let mut connection_pool = conn_pool.acquire().await?;
 
@@ -319,7 +274,7 @@ async fn task_rebase_handler(
 
 async fn task_rustcc_handler(
     rebase_daily: RebaseDaliy,
-    conn_pool: Arc<PgPool>,
+    conn_pool: web::Data<PgPool>,
 ) -> anyhow::Result<()> {
     let mut connection_pool = conn_pool.acquire().await?;
 
@@ -387,7 +342,7 @@ async fn task_rustcc_handler(
     Ok(())
 }
 
-pub async fn process_load_all_rebase_daily(conn_pool: Arc<PgPool>) -> anyhow::Result<()> {
+pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
     let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
     for item in total_rebase_daily_episode {
         let conn_pool = conn_pool.clone();
@@ -397,7 +352,7 @@ pub async fn process_load_all_rebase_daily(conn_pool: Arc<PgPool>) -> anyhow::Re
     Ok(())
 }
 
-pub async fn process_load_all_rustcc_daily(conn_pool: Arc<PgPool>) -> anyhow::Result<()> {
+pub async fn process_load_all_rustcc_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
     let total_rustcc_daily_episode = get_total_rustcc_daily_episode().await?;
     for item in total_rustcc_daily_episode {
         let conn_pool = conn_pool.clone();

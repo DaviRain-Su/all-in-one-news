@@ -1,18 +1,16 @@
-use axum::response::IntoResponse;
+use actix_web::HttpResponse;
 
-pub async fn health_check() -> impl IntoResponse {
-    ""
+pub async fn health_check() -> HttpResponse {
+    HttpResponse::Ok().finish()
 }
 
 #[cfg(test)]
 mod tests {
-    use axum::response::IntoResponse;
-
     use super::health_check;
 
     #[tokio::test]
     async fn health_check_success() {
         let response = health_check().await;
-        assert!(response.into_response().status().is_success());
+        assert!(response.status().is_success());
     }
 }

@@ -1,10 +1,8 @@
-use crate::routes::DatabaseConnection;
+use actix_web::web;
+use actix_web::HttpResponse;
 use aion_types::rebase::response::ListAllItemsResponse;
-use axum::extract::Query;
-use axum::response::IntoResponse;
-use axum::Json;
 use sqlx::query_as;
-use sqlx::Acquire;
+use sqlx::PgPool;
 
 #[derive(serde::Deserialize)]
 pub struct ListAllItemsQuery {
@@ -13,13 +11,9 @@ pub struct ListAllItemsQuery {
 }
 
 pub async fn list_all_items(
-    DatabaseConnection(mut conn_pool): DatabaseConnection,
-    Query(query): Query<ListAllItemsQuery>,
-) -> impl IntoResponse {
-    let connection_pool = conn_pool
-        .acquire()
-        .await
-        .expect("Failed to acquire connection");
+    query: web::Form<ListAllItemsQuery>,
+    pool: web::Data<PgPool>,
+) -> HttpResponse {
     // Calculate the OFFSET and LIMIT based on the query parameters
     let offset = query.page * query.per_page;
     let limit = query.per_page;
@@ -31,31 +25,26 @@ pub async fn list_all_items(
         offset,
         limit
     )
-    .fetch_all(connection_pool.as_mut())
+    .fetch_all(pool.as_ref())
     .await;
 
     match result {
-        Ok(items) => Ok(Json(items)),
-        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+        Ok(items) => HttpResponse::Ok().json(items),
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
 
-pub async fn list_all(DatabaseConnection(mut conn_pool): DatabaseConnection) -> impl IntoResponse {
-    let connection_pool = conn_pool
-        .acquire()
-        .await
-        .expect("Failed to acquire connection");
-
+pub async fn list_all(pool: web::Data<PgPool>) -> HttpResponse {
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
         "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC",
     )
-    .fetch_all(connection_pool.as_mut())
+    .fetch_all(pool.as_ref())
     .await;
 
     match result {
-        Ok(items) => Ok(Json(items)),
-        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+        Ok(items) => HttpResponse::Ok().json(items),
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }

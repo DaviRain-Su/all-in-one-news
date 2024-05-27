@@ -1,8 +1,6 @@
-use crate::routes::DatabaseConnection;
+use actix_web::web;
+use actix_web::HttpResponse;
 use aion_types::rebase::response::ListAllItemsResponse;
-use axum::extract::Query;
-use axum::response::IntoResponse;
-use axum::Json;
 use chrono::DateTime;
 use chrono::Utc;
 use serde::Deserialize;
@@ -10,7 +8,7 @@ use serde::Deserializer;
 use serde::Serialize;
 use serde::Serializer;
 use sqlx::query_as;
-use sqlx::Acquire;
+use sqlx::PgPool;
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TimeQuery {
@@ -42,24 +40,19 @@ where
 }
 
 pub async fn list_by_time(
-    DatabaseConnection(mut conn_pool): DatabaseConnection,
-    Query(query_params): Query<TimeQuery>,
-) -> impl IntoResponse {
-    let connection_pool = conn_pool
-        .acquire()
-        .await
-        .expect("Failed to acquire connection");
-
+    query_params: web::Form<TimeQuery>,
+    conn_poll: web::Data<PgPool>,
+) -> HttpResponse {
     let tags_result = query_as!(
             ListAllItemsResponse,
             "SELECT id, hash,  author, episode, introduce, time, title, url, tag FROM new_rebase_daily WHERE time = $1",
             &query_params.time
         )
-        .fetch_all(connection_pool.as_mut())
+        .fetch_all(conn_poll.as_ref())
         .await;
 
     match tags_result {
-        Ok(items) => Ok(Json(items)),
-        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+        Ok(items) => HttpResponse::Ok().json(items),
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }

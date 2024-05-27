@@ -1,5 +1,3 @@
-#![allow(clippy::await_holding_lock)]
-
 use all_in_one_news::configuration::get_configuration;
 use all_in_one_news::startup::Application;
 
@@ -17,10 +15,13 @@ async fn main() -> anyhow::Result<()> {
 
     let configuration = get_configuration()?;
 
-    let service = Application::build(configuration.clone()).await?;
-    println!("🌟🌟🌟🌟🌟🌟 Server is running on port 8000 🌟🌟🌟🌟🌟");
+    let application = Application::build(configuration.clone()).await?;
+    println!(
+        "🌟🌟🌟🌟🌟🌟 Server is running on port {} 🌟🌟🌟🌟🌟",
+        application.port()
+    );
 
-    let _ = service.run_until_stopped().await;
+    let _ = application.run_until_stopped().await;
 
     Ok(())
 }

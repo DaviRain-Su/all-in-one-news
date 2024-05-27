@@ -1,30 +1,22 @@
-use crate::routes::DatabaseConnection;
+use actix_web::web;
+use actix_web::HttpResponse;
 use aion_types::rebase::response::ListAllItemsResponse;
-use axum::response::IntoResponse;
-use axum::Json;
 use serde::Serialize;
 use sqlx::query_as;
-use sqlx::Acquire;
+use sqlx::PgPool;
 
 #[derive(Debug, Serialize)]
 pub struct AuthorsResponse {
     pub author: Vec<String>,
 }
 
-pub async fn list_authors(
-    DatabaseConnection(mut conn_pool): DatabaseConnection,
-) -> impl IntoResponse {
-    let connection_pool = conn_pool
-        .acquire()
-        .await
-        .expect("Failed to acquire connection");
-
+pub async fn list_authors(conn_pool: web::Data<PgPool>) -> HttpResponse {
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
         "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily",
     )
-    .fetch_all(connection_pool.as_mut())
+    .fetch_all(conn_pool.as_ref())
     .await;
 
     match result {
@@ -38,8 +30,8 @@ pub async fn list_authors(
             }
             authors.sort();
             authors.dedup();
-            Ok(Json(AuthorsResponse { author: authors }))
+            HttpResponse::Ok().json(AuthorsResponse { author: authors })
         }
-        Err(_) => Err(axum::http::StatusCode::INTERNAL_SERVER_ERROR),
+        Err(_) => HttpResponse::InternalServerError().finish(),
     }
 }
