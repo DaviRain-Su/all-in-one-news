@@ -1,6 +1,6 @@
 use actix_web::web;
 use actix_web::HttpResponse;
-use aion_types::rebase::response::ListAllItemsResponse;
+use aion_types::rebase::response::{ListAllItemsResponse, SimpleDisplay};
 use sqlx::query_as;
 use sqlx::PgPool;
 
@@ -56,7 +56,38 @@ pub async fn list_all(pool: web::Data<PgPool>) -> HttpResponse {
     .await;
 
     match result {
-        Ok(items) => HttpResponse::Ok().json(items),
+        Ok(items) => {
+            let items = items
+                .into_iter()
+                .map(|item| SimpleDisplay::from(item))
+                .collect::<Vec<_>>();
+            HttpResponse::Ok().json(items)
+        }
+        Err(e) => {
+            tracing::error!("Failed to execute query: {:?}", e);
+            HttpResponse::InternalServerError().finish()
+        }
+    }
+}
+
+#[tracing::instrument(name = "Retrieving all items from the database", skip(pool))]
+pub async fn simple_list_all(pool: web::Data<PgPool>) -> HttpResponse {
+    // Execute the database query
+    let result = query_as!(
+        ListAllItemsResponse,
+        "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily ORDER BY time DESC",
+    )
+    .fetch_all(pool.as_ref())
+    .await;
+
+    match result {
+        Ok(items) => {
+            let items = items
+                .into_iter()
+                .map(|item| SimpleDisplay::from(item).to_string())
+                .collect::<Vec<_>>();
+            HttpResponse::Ok().json(items)
+        }
         Err(e) => {
             tracing::error!("Failed to execute query: {:?}", e);
             HttpResponse::InternalServerError().finish()

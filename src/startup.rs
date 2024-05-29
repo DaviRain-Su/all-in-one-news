@@ -85,6 +85,10 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
                     web::get().to(rebase_query_all::list_all),
                 )
                 .route(
+                    "/rebase/simple_list_all",
+                    web::get().to(rebase_query_all::simple_list_all),
+                )
+                .route(
                     "/rebase/authors",
                     web::get().to(rebase_query_all_author::list_authors),
                 )

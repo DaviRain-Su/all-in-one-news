@@ -2,6 +2,8 @@ use chrono::DateTime;
 use chrono::Utc;
 use serde::Deserializer;
 use serde::{Deserialize, Serialize, Serializer};
+use std::fmt;
+use std::fmt::Display;
 
 // 自定义序列化器
 fn serialize_datetime<S>(datetime: &DateTime<chrono::Utc>, serializer: S) -> Result<S::Ok, S::Error>
@@ -50,4 +52,34 @@ pub struct ListAllItemsResponse {
     pub time: DateTime<chrono::Utc>,
     pub title: String,
     pub url: String,
+}
+
+#[derive(serde::Serialize, Debug)]
+pub struct SimpleDisplay {
+    pub id: i32,
+    pub title: String,
+    pub introduce: String,
+    pub url: String,
+}
+
+impl Display for SimpleDisplay {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        // pretty print the item
+        write!(
+            f,
+            "🌟🌟🌟{},{} LINK:「{}」🐧🐧🐧",
+            self.title, self.introduce, self.url
+        )
+    }
+}
+
+impl From<ListAllItemsResponse> for SimpleDisplay {
+    fn from(item: ListAllItemsResponse) -> Self {
+        SimpleDisplay {
+            id: item.id,
+            title: item.title,
+            introduce: item.introduce,
+            url: item.url,
+        }
+    }
 }
