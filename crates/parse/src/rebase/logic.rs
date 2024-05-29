@@ -6,6 +6,7 @@ use std::sync::{Arc, Mutex};
 use super::types::RebaseDaliy;
 use crate::rebase::types::RebaseDaliyEpisode;
 
+#[tracing::instrument(name = "Parse rebase data", fields(start, end))]
 pub async fn process_task_range(start: usize, end: usize, file: Arc<Mutex<File>>) {
     for id in start..=end {
         let html = reqwest::get(format!(
@@ -33,6 +34,7 @@ pub async fn process_task_range(start: usize, end: usize, file: Arc<Mutex<File>>
     }
 }
 
+#[tracing::instrument(name = "Parse rebase data", fields(start, end))]
 pub async fn parse_rebase_data(start: usize, end: usize) -> Vec<RebaseDaliyEpisode> {
     let mut result = vec![];
     for id in start..=end {

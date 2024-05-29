@@ -1,6 +1,7 @@
 use crate::rebase::constant::REBASE_RPC_URL;
 use crate::rebase::types::RebaseDaliy;
 
+#[tracing::instrument(name = "Get total count of rebase daily")]
 pub async fn total_count() -> anyhow::Result<usize> {
     let response = reqwest::get(format!(
         "{}?pagination[page]=1&pagination[pageSize]=1",

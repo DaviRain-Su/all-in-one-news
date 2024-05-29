@@ -7,6 +7,7 @@ pub mod types;
 use crate::rebase::types::RebaseDaliyEpisode;
 
 /// get total rebase daily episode
+#[tracing::instrument(name = "Get total rebase daily episode")]
 pub async fn get_total_rebase_daily_episode() -> anyhow::Result<Vec<RebaseDaliyEpisode>> {
     let cpu_count = num_cpus::get();
     let task_count = api::total_count().await?; // Total tasks to be processed
@@ -34,6 +35,9 @@ pub async fn get_total_rebase_daily_episode() -> anyhow::Result<Vec<RebaseDaliyE
         let mut result = task.await?;
         reuslt_rebase_daily_episode.append(&mut result);
     }
+
+    // Sort by id
+    reuslt_rebase_daily_episode.sort_by(|a, b| a.id.cmp(&b.id));
 
     Ok(reuslt_rebase_daily_episode)
 }

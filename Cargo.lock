@@ -317,6 +317,7 @@ dependencies = [
  "serde_json",
  "thiserror",
  "tokio",
+ "tracing",
 ]
 
 [[package]]
@@ -331,6 +332,7 @@ dependencies = [
  "sha256",
  "sqlx",
  "tokio",
+ "tracing",
 ]
 
 [[package]]

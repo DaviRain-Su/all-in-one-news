@@ -6,11 +6,10 @@ pub struct RebaseDaliyMeta {
 }
 
 #[derive(Debug, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RebaseDaliyPagination {
     pub page: usize,
-    #[serde(rename = "pageCount")]
     pub page_count: usize,
-    #[serde(rename = "pageSize")]
     pub page_size: usize,
     pub total: usize,
 }

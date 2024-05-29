@@ -12,6 +12,7 @@ aion-parse = { path = "../parse" }
 anyhow = "1.0.75"
 async-openai = "0.14.3"
 sha256 = "1.4.0"
+tracing = "0.1"
 
 [dependencies.sqlx]
 version = "0.7"
