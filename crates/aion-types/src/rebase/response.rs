@@ -56,9 +56,11 @@ pub struct ListAllItemsResponse {
 
 #[derive(serde::Serialize, Debug)]
 pub struct SimpleDisplay {
-    pub id: i32,
+    #[serde(rename = "🌟")]
     pub title: String,
+    #[serde(rename = "➡️")]
     pub introduce: String,
+    #[serde(rename = "🔗")]
     pub url: String,
 }
 
@@ -76,7 +78,6 @@ impl Display for SimpleDisplay {
 impl From<ListAllItemsResponse> for SimpleDisplay {
     fn from(item: ListAllItemsResponse) -> Self {
         SimpleDisplay {
-            id: item.id,
             title: item.title,
             introduce: item.introduce,
             url: item.url,

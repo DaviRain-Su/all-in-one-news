@@ -154,7 +154,7 @@ async fn task_rebase_handler(
 
     // 执行查询并获取最大id
     let result = sqlx::query!("SELECT MAX(id) FROM rebase_daily")
-        .fetch_optional(&*conn_pool.as_ref())
+        .fetch_optional(conn_pool.as_ref())
         .await;
 
     let current_max_id = match result {
@@ -213,7 +213,7 @@ pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyh
         // if not access, skip this episode
         // if access, insert into database
         if is_url::is_url(&item.attributes.url) {
-            if let Ok(_) = reqwest::get(&item.attributes.url).await {
+            if reqwest::get(&item.attributes.url).await.is_ok() {
                 let conn_pool = conn_pool.clone();
                 task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
             } else {

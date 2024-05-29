@@ -59,7 +59,7 @@ pub async fn list_all(pool: web::Data<PgPool>) -> HttpResponse {
         Ok(items) => {
             let items = items
                 .into_iter()
-                .map(|item| SimpleDisplay::from(item))
+                .map(SimpleDisplay::from)
                 .collect::<Vec<_>>();
             HttpResponse::Ok().json(items)
         }
@@ -84,7 +84,7 @@ pub async fn simple_list_all(pool: web::Data<PgPool>) -> HttpResponse {
         Ok(items) => {
             let items = items
                 .into_iter()
-                .map(|item| SimpleDisplay::from(item).to_string())
+                .map(SimpleDisplay::from)
                 .collect::<Vec<_>>();
             HttpResponse::Ok().json(items)
         }
