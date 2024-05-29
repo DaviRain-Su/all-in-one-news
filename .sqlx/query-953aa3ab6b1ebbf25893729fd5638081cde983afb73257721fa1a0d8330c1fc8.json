@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily ORDER BY time DESC OFFSET $1 LIMIT $2",
+  "query": "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily ORDER BY time DESC",
   "describe": {
     "columns": [
       {
@@ -42,21 +42,12 @@
         "ordinal": 7,
         "name": "url",
         "type_info": "Text"
-      },
-      {
-        "ordinal": 8,
-        "name": "tag",
-        "type_info": "TextArray"
       }
     ],
     "parameters": {
-      "Left": [
-        "Int8",
-        "Int8"
-      ]
+      "Left": []
     },
     "nullable": [
-      false,
       false,
       false,
       false,
@@ -67,5 +58,5 @@
       false
     ]
   },
-  "hash": "539e270b6c43670291a225b3323155deba7d4b24f759967f7f9cdb49f61a3c5d"
+  "hash": "953aa3ab6b1ebbf25893729fd5638081cde983afb73257721fa1a0d8330c1fc8"
 }

@@ -1,6 +1,6 @@
 {
   "db_name": "PostgreSQL",
-  "query": "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rustcc_daily",
+  "query": "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily",
   "describe": {
     "columns": [
       {
@@ -42,11 +42,6 @@
         "ordinal": 7,
         "name": "url",
         "type_info": "Text"
-      },
-      {
-        "ordinal": 8,
-        "name": "tag",
-        "type_info": "TextArray"
       }
     ],
     "parameters": {
@@ -60,9 +55,8 @@
       false,
       false,
       false,
-      false,
       false
     ]
   },
-  "hash": "be71770d4feacc9e77121430957d72c6119919fa5850a5d2555bd4b7af833d2b"
+  "hash": "be3df5d7b9fa56a6137647d39d0b7e6b944b77dba4a4da1fbcba07a614f1b58e"
 }
