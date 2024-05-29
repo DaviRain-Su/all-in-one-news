@@ -8,7 +8,7 @@ use sqlx::PgPool;
 pub async fn list_latest_news(conn_pool: web::Data<PgPool>) -> HttpResponse {
     let tags_result = query_as!(
            ListAllItemsResponse,
-           "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily ORDER BY time DESC LIMIT 10",
+           "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily ORDER BY time DESC LIMIT 20",
        )
        .fetch_all(conn_pool.as_ref())
        .await;
