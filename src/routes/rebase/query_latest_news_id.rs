@@ -12,7 +12,7 @@ use sqlx::PgPool;
 pub async fn list_latest_news_ids(connection_pool: web::Data<PgPool>) -> HttpResponse {
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily",
+        "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily",
     )
     .fetch_all(connection_pool.as_ref())
     .await;

@@ -1,4 +1,3 @@
-use crate::tag::Tag;
 use aion_parse::common::Message;
 use aion_parse::rebase::types::RebaseDaliyEpisode;
 use sha256::digest;
@@ -13,7 +12,6 @@ pub struct RebaseDaliy {
     pub time: chrono::DateTime<chrono::Utc>,
     pub title: String,
     pub url: String,
-    pub tag: Vec<Tag>,
 }
 
 impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
@@ -42,7 +40,6 @@ impl TryFrom<RebaseDaliyEpisode> for RebaseDaliy {
             time,
             title: episode.attributes.title,
             url: episode.attributes.url,
-            tag: vec![Tag::Rebase],
         })
     }
 }
@@ -76,7 +73,6 @@ impl TryFrom<Message> for RebaseDaliy {
             time,
             title: value.title,
             url: value.link,
-            tag: vec![Tag::Rust],
         })
     }
 }

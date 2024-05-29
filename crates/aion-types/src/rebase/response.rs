@@ -50,5 +50,4 @@ pub struct ListAllItemsResponse {
     pub time: DateTime<chrono::Utc>,
     pub title: String,
     pub url: String,
-    pub tag: Vec<String>,
 }

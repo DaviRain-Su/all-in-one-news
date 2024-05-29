@@ -2,7 +2,6 @@ use crate::configuration::{DatabaseSettings, Settings};
 use crate::routes::rebase::query_all as rebase_query_all;
 use crate::routes::rebase::query_all_author as rebase_query_all_author;
 use crate::routes::rebase::query_by_id as rebase_query_by_id;
-use crate::routes::rebase::query_by_tag as rebase_query_by_tag;
 use crate::routes::rebase::query_by_time as rebase_query_by_time;
 use crate::routes::rebase::query_latest_news as rebase_query_latest_news;
 use crate::routes::rebase::query_latest_news_id as rebase_query_latest_news_id;
@@ -90,10 +89,6 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
                     web::get().to(rebase_query_all_author::list_authors),
                 )
                 .route(
-                    "/rebase/tags",
-                    web::get().to(rebase_query_by_tag::list_tags),
-                )
-                .route(
                     "/rebase/time",
                     web::get().to(rebase_query_by_time::list_by_time),
                 ) // todo (query have problem)
@@ -136,29 +131,6 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     Ok(server)
 }
 
-async fn create_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
-    // SQL 创建表格的语句
-    let create_table_query = r#"
-        CREATE TABLE IF NOT EXISTS new_rebase_daily (
-            key_id UUID PRIMARY KEY NOT NULL,
-            hash TEXT NOT NULL,
-            id INTEGER NOT NULL,
-            author TEXT NOT NULL,
-            episode TEXT NOT NULL,
-            introduce TEXT NOT NULL,
-            time TIMESTAMPTZ NOT NULL,
-            title TEXT NOT NULL,
-            url TEXT NOT NULL,
-            tag TEXT[] NOT NULL
-        )
-    "#;
-
-    // 执行创建表格的查询
-    sqlx::query(create_table_query).execute(pool).await?;
-
-    Ok(())
-}
-
 #[allow(dead_code)]
 async fn truncate_rebase_table(pool: &PgPool) -> anyhow::Result<()> {
     // SQL 清空表格内容的语句
@@ -174,43 +146,35 @@ async fn task_rebase_handler(
     rebase_daily: RebaseDaliy,
     conn_pool: web::Data<PgPool>,
 ) -> anyhow::Result<()> {
-    let mut connection_pool = conn_pool.acquire().await?;
-
     println!("task_rebase_handler 定时任务执行中...");
 
-    let key_id = Uuid::new_v4();
+    // 执行查询并获取最大id
+    let result = sqlx::query!("SELECT MAX(id) FROM rebase_daily")
+        .fetch_optional(&*conn_pool.as_ref())
+        .await;
 
-    create_rebase_table(&conn_pool).await?;
-
-    // 在这里编写你的定时任务逻辑
-    // 执行插入操作
-    // 检查是否已存在相同 HASH 的记录
-    let existing_record = sqlx::query!(
-        "SELECT id FROM new_rebase_daily WHERE hash = $1",
-        rebase_daily.hash
-    )
-    .fetch_optional(connection_pool.as_mut())
-    .await;
-
-    match existing_record {
-        Ok(Some(_)) => {
-            println!("task_rebase_handler 相同 ID 的记录已存在，不执行插入操作");
+    let current_max_id = match result {
+        Ok(Some(record)) => record.max.unwrap_or(0),
+        Ok(None) => 0, // If no records are found, start with sequence number 1
+        Err(e) => {
+            tracing::error!("Failed to fetch max sequence number: {:?}", e);
+            return Err(e.into());
         }
-        Ok(None) => {
-            // 如果不存在相同 ID 的记录，则执行插入操作
-            // TODO( tag 可以在后面更新)
-            let tags = rebase_daily
-                .tag
-                .into_iter()
-                .map(|v| v.to_string())
-                .collect::<Vec<String>>();
+    };
 
-            let result = sqlx::query!(
+    if current_max_id as usize >= rebase_daily.id {
+        tracing::info!(
+            "task_rebase_handler: rebase_daily.id({})  <= current_max_id({}), skip insert",
+            rebase_daily.id,
+            current_max_id
+        );
+    } else {
+        let result = sqlx::query!(
                            r#"
-                           INSERT INTO new_rebase_daily (key_id, hash, id, author, episode, introduce, time, title, url, tag)
-                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+                           INSERT INTO rebase_daily (key_id, hash, id, author, episode, introduce, time, title, url)
+                           VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
                            "#,
-                           key_id,
+                           Uuid::new_v4(),
                            rebase_daily.hash,
                            rebase_daily.id as i32,
                            rebase_daily.author,
@@ -219,24 +183,21 @@ async fn task_rebase_handler(
                            rebase_daily.time,
                            rebase_daily.title,
                            rebase_daily.url,
-                           &tags // 注意此处使用引用来插入 Vec<String>
+
                        )
-                       .execute(connection_pool.as_mut())
+                       .execute(conn_pool.as_ref())
                        .await;
 
-            match result {
-                Ok(_) => {
-                    println!("task_rebase_handler 插入成功");
-                }
-                Err(e) => {
-                    println!("task_rebase_handler 插入失败: {:?}", e);
-                }
+        match result {
+            Ok(_) => {
+                println!("task_rebase_handler 插入成功");
+            }
+            Err(e) => {
+                println!("task_rebase_handler 插入失败: {:?}", e);
             }
         }
-        Err(e) => {
-            println!("task_rebase_handler 检查记录时出错: {:?}", e);
-        }
     }
+
     Ok(())
 }
 
@@ -244,8 +205,25 @@ async fn task_rebase_handler(
 pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
     let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
     for item in total_rebase_daily_episode {
-        let conn_pool = conn_pool.clone();
-        task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
+        // check rebase daily episode URL is can access
+        // if not access, skip this episode
+        // if access, insert into database
+        if is_url::is_url(&item.attributes.url) {
+            if let Ok(_) = reqwest::get(&item.attributes.url).await {
+                let conn_pool = conn_pool.clone();
+                task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
+            } else {
+                tracing::error!(
+                    "process_load_all_rebase_daily: {} is not Valid URL",
+                    item.attributes.url
+                );
+            }
+        } else {
+            tracing::error!(
+                "process_load_all_rebase_daily: {} is not access",
+                item.attributes.url
+            );
+        }
     }
 
     Ok(())

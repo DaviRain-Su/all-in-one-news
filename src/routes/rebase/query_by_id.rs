@@ -22,7 +22,7 @@ pub async fn list_by_id(
 ) -> HttpResponse {
     let tags_result = query_as!(
            ListAllItemsResponse,
-           "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily WHERE id = $1",
+           "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily WHERE id = $1",
            query_params.id,
        )
        .fetch_all(conn_pool.as_ref())

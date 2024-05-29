@@ -19,7 +19,7 @@ pub async fn list_authors(conn_pool: web::Data<PgPool>) -> HttpResponse {
     // Execute the database query
     let result = query_as!(
         ListAllItemsResponse,
-        "SELECT id, hash, author, episode, introduce, time, title, url, tag FROM new_rebase_daily",
+        "SELECT id, hash, author, episode, introduce, time, title, url FROM rebase_daily",
     )
     .fetch_all(conn_pool.as_ref())
     .await;
