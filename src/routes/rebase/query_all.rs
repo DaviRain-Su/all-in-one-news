@@ -56,13 +56,7 @@ pub async fn list_all(pool: web::Data<PgPool>) -> HttpResponse {
     .await;
 
     match result {
-        Ok(items) => {
-            let items = items
-                .into_iter()
-                .map(SimpleDisplay::from)
-                .collect::<Vec<_>>();
-            HttpResponse::Ok().json(items)
-        }
+        Ok(items) => HttpResponse::Ok().json(items),
         Err(e) => {
             tracing::error!("Failed to execute query: {:?}", e);
             HttpResponse::InternalServerError().finish()
