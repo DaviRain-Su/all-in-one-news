@@ -8,12 +8,12 @@ edition = "2021"
 [dependencies]
 anyhow = "1.0.75"
 num_cpus = "1.16.0"
-reqwest = { version = "0.11.20", features = ["json", "blocking"] }
-scraper = "0.17.1"
+reqwest = { version = "0.12.4", features = ["json", "blocking"] }
+scraper = "0.19.0"
 serde = { version = "1.0.188", features = ["derive"] }
 serde_json = "1.0.105"
 thiserror = "1.0.50"
-html5ever = "0.26"
+html5ever = "0.27"
 select = "0.6"
 retry = "2.0.0"
 tokio = { version = "1.32.0", features = ["full"] }
