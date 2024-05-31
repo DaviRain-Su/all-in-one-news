@@ -1,6 +1,8 @@
 <!doctype html>
-<html>
+<html lang="zh">
     <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>Main Page</title>
         <style>
             /* 全局样式 */
@@ -14,6 +16,7 @@
 
             h1 {
                 color: #5a5a5a;
+                font-size: 24px; /* 调整标题字体大小 */
             }
 
             ul {
@@ -55,11 +58,35 @@
         </style>
     </head>
     <body>
-        <h1>Welcome to the Rebase News</h1>
-        <nav>
-            <a href="/">Home</a>
-            <a href="/rebase/list_all">List All</a>
-            <a href="/rebase/latest">Latest</a>
-        </nav>
+        <header>
+            <h1>Welcome to the Rebase News</h1>
+            <nav>
+                <a href="/">Home</a>
+                <a href="/rebase/list_all">List All</a>
+                <a href="/rebase/latest">Latest</a>
+            </nav>
+        </header>
+        <main>
+            <h2>Featured Articles</h2>
+            <ul>
+                {% for item in items %}
+                <li>
+                    <strong>Title:</strong> {{ item.title }}<br />
+                    <strong>Introduce:</strong> {{ item.introduce }}<br />
+                    <strong>URL:</strong>
+                    <a href="{{ item.url }}">{{ item.url }}</a>
+                </li>
+                {% endfor %}
+            </ul>
+            <h2>Resources</h2>
+            <ul>
+                <li>
+                    <a href="https://github.com/DaviRain-Su/all-in-one-news"
+                        >GitHub</a
+                    >
+                </li>
+            </ul>
+        </main>
+        <footer>© 2024 Rebase News. All rights reserved.</footer>
     </body>
 </html>
