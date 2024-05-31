@@ -128,6 +128,9 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
             if let Err(err) = process_load_all_rebase_daily(state1.clone()).await {
                 eprintln!("process_load_all_rebase_daily 定时任务执行出错: {:?}", err);
             }
+            println!(
+                "🦍🦍🦍🦍🦍🦍🦍🦍🦍🦍🦍🦍🦍🦍🦍process_load_all_rebase_daily 定时任务执行完成"
+            );
         }
     });
 
@@ -152,40 +155,6 @@ async fn task_rebase_handler(
 ) -> anyhow::Result<()> {
     println!("task_rebase_handler 定时任务执行中...");
 
-    let result = sqlx::query!(
-                r#"
-                INSERT INTO rebase_daily (key_id, hash, id, author, episode, introduce, time, title, url)
-                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-                "#,
-                Uuid::new_v4(),
-                rebase_daily.hash,
-                rebase_daily.id as i32,
-                rebase_daily.author,
-                rebase_daily.episode,
-                rebase_daily.introduce,
-                rebase_daily.time,
-                rebase_daily.title,
-                rebase_daily.url,
-
-            )
-            .execute(conn_pool.as_ref())
-            .await;
-
-    match result {
-        Ok(_) => {
-            println!("task_rebase_handler 插入成功");
-        }
-        Err(e) => {
-            println!("task_rebase_handler 插入失败: {:?}", e);
-        }
-    }
-
-    Ok(())
-}
-
-#[tracing::instrument(name = "process_load_all_rebase_daily", skip(conn_pool))]
-pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
-    let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
     // 执行查询并获取最大id
     let result = sqlx::query!("SELECT MAX(id) FROM rebase_daily")
         .fetch_optional(conn_pool.as_ref())
@@ -199,39 +168,76 @@ pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyh
             return Err(e.into());
         }
     };
+
+    if current_max_id as usize >= rebase_daily.id {
+        tracing::info!(
+            "task_rebase_handler: rebase_daily.id({})  <= current_max_id({}), skip insert",
+            rebase_daily.id,
+            current_max_id
+        );
+    } else {
+        let result = sqlx::query!(
+                               r#"
+                               INSERT INTO rebase_daily (key_id, hash, id, author, episode, introduce, time, title, url)
+                               VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+                               "#,
+                               Uuid::new_v4(),
+                               rebase_daily.hash,
+                               rebase_daily.id as i32,
+                               rebase_daily.author,
+                               rebase_daily.episode,
+                               rebase_daily.introduce,
+                               rebase_daily.time,
+                               rebase_daily.title,
+                               rebase_daily.url,
+
+                           )
+                           .execute(conn_pool.as_ref())
+                           .await;
+
+        match result {
+            Ok(_) => {
+                println!("task_rebase_handler 插入成功");
+            }
+            Err(e) => {
+                println!("task_rebase_handler 插入失败: {:?}", e);
+            }
+        }
+    }
+
+    Ok(())
+}
+
+#[tracing::instrument(name = "process_load_all_rebase_daily", skip(conn_pool))]
+pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
+    let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
+
     // check rebase daily episode URL is can access
     // if not access, skip this episode
     // if access, insert into database
     for item in total_rebase_daily_episode {
-        if item.id > current_max_id as usize {
-            // check rebase daily episode URL is can access
-            // if not access, skip this episode
-            // if access, insert into database
-            if is_url::is_url(&item.attributes.url) {
-                if reqwest::get(&item.attributes.url).await.is_ok() {
-                    tracing::info!(
-                        "process_load_all_rebase_daily: id({}), {} is access",
-                        item.id,
-                        item.attributes.url
-                    );
-                    let conn_pool = conn_pool.clone();
-                    task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
-                } else {
-                    tracing::error!(
-                        "process_load_all_rebase_daily: {} is not Valid URL",
-                        item.attributes.url
-                    );
-                }
+        // check rebase daily episode URL is can access
+        // if not access, skip this episode
+        // if access, insert into database
+        if is_url::is_url(&item.attributes.url) {
+            if reqwest::get(&item.attributes.url).await.is_ok() {
+                tracing::info!(
+                    "process_load_all_rebase_daily: id({}), {} is access",
+                    item.id,
+                    item.attributes.url
+                );
+                let conn_pool = conn_pool.clone();
+                task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
             } else {
                 tracing::error!(
-                    "process_load_all_rebase_daily: {} is not access",
+                    "process_load_all_rebase_daily: {} is not Valid URL",
                     item.attributes.url
                 );
             }
         } else {
-            tracing::info!(
-                "process_load_all_rebase_daily: {} is already in the database",
-                item.id
+            tracing::error!(
+                "process_load_all_rebase_daily: {} is not access",
+                item.attributes.url
             );
         }
     }
