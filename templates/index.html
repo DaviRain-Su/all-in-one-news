@@ -1,8 +1,7 @@
 <!doctype html>
-<html lang="en">
+<html>
     <head>
-        <meta charset="UTF-8" />
-        <title>Rebase All News</title>
+        <title>Main Page</title>
         <style>
             /* 全局样式 */
             body {
@@ -56,21 +55,11 @@
         </style>
     </head>
     <body>
-        <h1>All News</h1>
+        <h1>Welcome to the Rebase News</h1>
         <nav>
             <a href="/">Home</a>
             <a href="/rebase/list_all">List All</a>
             <a href="/rebase/latest">Latest</a>
         </nav>
-        <ul>
-            {% for item in items %}
-            <li>
-                <strong>Title:</strong> {{ item.title }}<br />
-                <strong>Introduce:</strong> {{ item.introduce }}<br />
-                <strong>URL:</strong>
-                <a href="{{ item.url }}">{{ item.url }}</a>
-            </li>
-            {% endfor %}
-        </ul>
     </body>
 </html>
