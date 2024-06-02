@@ -58,6 +58,7 @@ pub struct ListAllItemsResponse {
 pub struct SimpleDisplay {
     #[serde(rename = "🌟")]
     pub title: String,
+    pub time: String,
     #[serde(rename = "➡️")]
     pub introduce: String,
     #[serde(rename = "🔗")]
@@ -79,6 +80,7 @@ impl From<ListAllItemsResponse> for SimpleDisplay {
     fn from(item: ListAllItemsResponse) -> Self {
         SimpleDisplay {
             title: item.title,
+            time: item.time.to_utc().to_string(),
             introduce: item.introduce,
             url: item.url,
         }

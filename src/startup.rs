@@ -11,6 +11,7 @@ use actix_web::dev::Server;
 use actix_web::HttpResponse;
 use actix_web::{web, App, HttpServer};
 use aion_parse::rebase::get_total_rebase_daily_episode;
+use aion_parse::rebase::types::RebaseDaliyEpisode;
 use aion_types::rebase::rebase_daily::RebaseDaliy;
 use anyhow::Result;
 use sqlx::postgres::PgPoolOptions;
@@ -155,28 +156,7 @@ async fn task_rebase_handler(
 ) -> anyhow::Result<()> {
     println!("task_rebase_handler 定时任务执行中...");
 
-    // 执行查询并获取最大id
-    let result = sqlx::query!("SELECT MAX(id) FROM rebase_daily")
-        .fetch_optional(conn_pool.as_ref())
-        .await;
-
-    let current_max_id = match result {
-        Ok(Some(record)) => record.max.unwrap_or(0),
-        Ok(None) => 0, // If no records are found, start with sequence number 1
-        Err(e) => {
-            tracing::error!("Failed to fetch max sequence number: {:?}", e);
-            return Err(e.into());
-        }
-    };
-
-    if current_max_id as usize >= rebase_daily.id {
-        tracing::info!(
-            "task_rebase_handler: rebase_daily.id({})  <= current_max_id({}), skip insert",
-            rebase_daily.id,
-            current_max_id
-        );
-    } else {
-        let result = sqlx::query!(
+    let result = sqlx::query!(
                                r#"
                                INSERT INTO rebase_daily (key_id, hash, id, author, episode, introduce, time, title, url)
                                VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
@@ -195,13 +175,12 @@ async fn task_rebase_handler(
                            .execute(conn_pool.as_ref())
                            .await;
 
-        match result {
-            Ok(_) => {
-                println!("task_rebase_handler 插入成功");
-            }
-            Err(e) => {
-                println!("task_rebase_handler 插入失败: {:?}", e);
-            }
+    match result {
+        Ok(_) => {
+            println!("task_rebase_handler 插入成功");
+        }
+        Err(e) => {
+            println!("task_rebase_handler 插入失败: {:?}", e);
         }
     }
 
@@ -212,34 +191,61 @@ async fn task_rebase_handler(
 pub async fn process_load_all_rebase_daily(conn_pool: web::Data<PgPool>) -> anyhow::Result<()> {
     let total_rebase_daily_episode = get_total_rebase_daily_episode().await?;
 
-    // check rebase daily episode URL is can access
-    // if not access, skip this episode
-    // if access, insert into database
+    // 执行查询并获取最大id
+    let result = sqlx::query!("SELECT MAX(id) FROM rebase_daily")
+        .fetch_optional(conn_pool.as_ref())
+        .await;
+
+    let current_max_id = match result {
+        Ok(Some(record)) => record.max.unwrap_or(0),
+        Ok(None) => 0, // If no records are found, start with sequence number 1
+        Err(e) => {
+            tracing::error!("Failed to fetch max sequence number: {:?}", e);
+            return Err(e.into());
+        }
+    };
+
+    // search current_max_id on total_rebase_daily_episode
     for item in total_rebase_daily_episode {
-        // check rebase daily episode URL is can access
-        // if not access, skip this episode
-        // if access, insert into database
-        if is_url::is_url(&item.attributes.url) {
-            if reqwest::get(&item.attributes.url).await.is_ok() {
-                tracing::info!(
-                    "process_load_all_rebase_daily: id({}), {} is access",
-                    item.id,
-                    item.attributes.url
-                );
-                let conn_pool = conn_pool.clone();
-                task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
-            } else {
-                tracing::error!(
-                    "process_load_all_rebase_daily: {} is not Valid URL",
-                    item.attributes.url
-                );
-            }
+        if item.id as i32 > current_max_id {
+            println!("Current item: {:?}", item);
+            process_episode(item, conn_pool.clone()).await?;
         } else {
-            tracing::error!(
-                "process_load_all_rebase_daily: {} is not access",
-                item.attributes.url
+            println!(
+                "current item id: {}, MAX id: {} , Item: {:?}",
+                item.id, current_max_id, item
             );
         }
+    }
+    tracing::info!("Have processed all items");
+
+    Ok(())
+}
+
+async fn process_episode(
+    item: RebaseDaliyEpisode,
+    conn_pool: web::Data<PgPool>,
+) -> anyhow::Result<()> {
+    if is_url::is_url(&item.attributes.url) {
+        match reqwest::get(&item.attributes.url).await {
+            Ok(response) => {
+                if response.status().is_success() {
+                    tracing::info!(
+                        "process_load_all_rebase_daily: id({}), {} is accessible",
+                        item.id,
+                        item.attributes.url
+                    );
+                    task_rebase_handler(RebaseDaliy::try_from(item)?, conn_pool).await?;
+                } else {
+                    tracing::error!("URL is not accessible: {}", item.attributes.url);
+                }
+            }
+            Err(e) => {
+                tracing::error!("Failed to fetch URL {}: {}", item.attributes.url, e);
+            }
+        }
+    } else {
+        tracing::error!("Invalid URL: {}", item.attributes.url);
     }
     Ok(())
 }
