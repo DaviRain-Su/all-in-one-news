@@ -120,7 +120,7 @@ pub async fn run(listener: TcpListener, conn_pool: PgPool) -> Result<Server> {
     // 使用tokio::spawn启动一个异步任务执行定时操作
     tokio::spawn(async move {
         // 定时执行任务，每天执行一次
-        let mut interval = time::interval(Duration::from_secs(60 * 60));
+        let mut interval = time::interval(Duration::from_secs(60 * 60 * 24));
 
         loop {
             interval.tick().await;
